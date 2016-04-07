@@ -1,0 +1,561 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Journal Article
+% LaTeX Template
+% Version 1.3 (9/9/13)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%   PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[twoside]{article}
+
+\usepackage{lipsum} % Package to generate dummy text throughout this template
+
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+\usepackage{graphicx} % Used for including images
+\graphicspath{ {images/} }
+
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
+\renewcommand\thesubsection{\Roman{subsection}} % Roman numerals for subsections
+\titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
+\titleformat{\subsection}[block]{\large}{\thesubsection.}{1em}{} % Change the look of the section titles
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+\fancyhead[C]{CLI Chat App $\bullet$ April 2016 } % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+
+%----------------------------------------------------------------------------------------
+%   TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{CLI Chat Application}} % Article title
+
+\author{
+\large
+\textsc{Nir Boneh}\\[2mm] % Your name
+\normalsize University of Colorado Boulder \\ % Your institution
+\normalsize \href{mailto:nir.boneh@colorado.edu}{nir.boneh@colorado.edu} % Your email address
+\normalsize \href Source Code: {https://github.com/nboneh/CLIChatApp}{https://github.com/nboneh/CLIChatApp}                    % SouceCode
+\vspace{-5mm}
+}
+\date{}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Insert title
+
+\thispagestyle{fancy} % All pages have headers and footers
+
+%----------------------------------------------------------------------------------------
+%   ABSTRACT
+%----------------------------------------------------------------------------------------
+
+\begin{abstract}
+
+\noindent
+This research paper deals closely with the creation of an interactive web-map and the specifics of creating one.
+The created interactive map can be found at \url{https://hate-map.herokuapp.com/} and aims to show correlation
+between the inhabitants of hate-groups in America and racial spread, income level, and quality of education.
+
+\end{abstract}
+
+%----------------------------------------------------------------------------------------
+%   ARTICLE CONTENTS
+%----------------------------------------------------------------------------------------
+
+\begin{multicols}{2} % Two-column layout throughout the main article text
+
+\section{Introduction}
+
+\lettrine[nindent=0em,lines=3]{T}he Southern Poverty Law Center (SPLC), a US government organization dedicated to fight bigotry and hate, managed to gather information of over 1000 hate groups residing within America in 2010. These groups commit hate-crimes that instill paranoia in US citizens such as in 2012 a black woman told police that three-men from the KKK set her on fire and the beating of a gay college student named Mathew Shepard in October 1998. How does an individual of a specific targeted group avoid residing closely to an existing hate-group, or citizens that have the potential to form such hate-groups? This research paper will aim to describe how to create an interactive-map in detail, displaying data that might be helpful in showing if there exists a correlation between the inhabitants of these hate-groups with the location's racial spread, income level, and quality of education. Hopefully, the map created from the research can be useful in eliminating the causes that lead to the creation of such hate-groups or just providing clarity of type of areas that should be avoided for individual safety.
+
+%------------------------------------------------
+
+\section{Methods}
+
+Creating an interactive map for the hate-group data from the SPLC and also displaying information about the various areas income level, racial spread, and quality of education from the United States Census Bureau (USCB) involves three large steps. 
+
+\begin{enumerate}
+  \item Gathering, formatting, and manipulating data into proper, easy to user JSON format.
+  \item Setting up server side code with useful HTTP get methods that serve JSON data. This step also involves figuring out how to host the server publicly.
+  \item Hacking an HTML webpage with the emphasis being on the client-side JavaScript, which will contain the core logic for the map's functionality. 
+\end{enumerate}
+
+
+\subsection{Data Gathering, Formatting, and Manipulating}
+Data gathering and formatting is a crucial component of making the map serve-up intresting data quickly and efficently.
+Before even-looking into the hate-group data and the USCB data, a setup of geoJson subdividing the United States map, will be the first thing that needs to be setup. 
+
+\subsubsection{GeoJSON}
+It was decided that the map will be subdivided into state-level and county-level. To setup the geoJsons required, public shape files from the USCB were downloaded and converted using the following command from GDAL:
+
+\begin{verbatim}
+ ogr2ogr -f GeoJSON -t_srs EPSG:4326 
+ counties.geojson cb_2013_us_counties.shp
+\end{verbatim}
+What is important to note here is the use of EPSG:4326 as the spatial reference which is used for open-street map projection.
+Initially, there was also the idea of zip-level subdivision. This was because both the hate-group data and the USCB data are provided in zip-level, but the geojson file ended up being around 5 gb (too large for a web-app). Two solutions were proposed, but denied. The first was simplifying the data, but that ended up making the zip-codes sort of an odd improper shape and the second was using a database, but due to time and money constraints this idea was also denied. 
+
+\subsubsection{Hate Data}
+Getting the hate-data from the SPLC was relatively easy, but it was set-up in a csv format which is incredibly inefficient to use when it comes to JavaScript.
+\begin{verbatim}
+CHAPTER NAME,CITY,STATE,MOVEMENT CLASS,ZIP
+Aryan Nations 88,Ashland,AL,Neo-Nazi,36251-0663
+Aryan Nations Knights of the Ku Klux Klan*,
+Ashland,AL,Ku Klux Klan,36251
+\end{verbatim}
+Java code was hacked up for conversion:
+\begin{verbatim}
+JSONArray json = new JSONArray();
+while ((line = br.readLine()) != null) {
+    String[] split = line.split(",");
+    JSONObject entry = new JSONObject();
+    entry.put("zipCode", split[0]);
+    entry.put("class", split[1]);
+    .
+    .
+    .
+    json.put(entry);
+retunr json;
+\end{verbatim}
+The java code took the csv file split each line by commas and put the results into a JSONArray which looked something like this:
+\begin{verbatim}
+[
+    {
+        "chapterName": "Aryan Nations 88",
+        "city": "Ashland",
+        "state": "AL",
+        "class": "Neo-Nazi",
+        "zipCode": "36251-0663",
+    },
+    {
+        "chapterName": "Aryan Nations 
+        Knights 
+        of the Ku Klux Klan*",
+        "city": "Ashland",
+        "state": "AL",
+        "class": "Ku Klux Klan",
+        "zipCode": "36251",
+    },
+    {
+        "chapterName": "Brotherhood 
+        of Klans Knights of 
+        the Ku Klux Klan",
+        "city": "incomplete",
+        "state": "AL",
+        "class": "Ku Klux Klan",
+        "zipCode": "36104",
+    },
+    {
+        "chapterName": "Confederate 
+        Hammerskins",
+        "city": "Huntsville",
+        "state": "AL",
+        "class": "Racist Skinhead",
+        "zipCode": "35801",
+    },..
+]
+\end{verbatim}
+This looks good, but crucially what is missing here for serving data on a map is the latitude and longitude information. Luckily, Google’s map API for JavaScript provided a geocoder for turning an address, even zipcodes, into latitude and longitude. Running a small JavaScript code with the geocoder, latitude and longitude values were added to each element in the array.
+\begin{verbatim}
+[
+    {
+        "chapterName": "Aryan Nations 88",
+        "city": "Ashland",
+        "state": "AL",
+        "class": "Neo-Nazi",
+        "zipCode": "36251-0663",
+        "lat": 33.243964,
+        "lng": -85.84503
+    },..
+]
+\end{verbatim}
+
+This format makes it incredibly easy with a single for loop to add all the markers needed to the map. It should also be noted that during this step, icons from the SPLC were added to the project in order to display a distinct icon image for each hate-group class. Next, a data-set for the hate-groups for the state-level of the map was needed to be created, because displaying 1002 hate-groups at once is too expensive.
+
+\begin{verbatim}
+[ 
+ {
+        "state": "WA",
+        "count": 10,
+        "lat": 47.7510741,
+        "lng": -120.74013860000002
+    },
+    {
+        "state": "OR",
+        "count": 9,
+        "lat": 44,
+        "lng": -120.5
+    },
+    {
+        "state": "CA",
+        "count": 57,
+        "lat": 36.778261,
+        "lng": -119.41793239999998
+    }...
+]
+\end{verbatim}
+Each object represents a state and the number of hate groups inhabiting it. A small script was ran in JavaScript to convert the zip codes into states using  Google’s geocoder and grouping the hate-groups to each state, latitude and longitude was also found in the process.
+
+\subsubsection{United States Census Bureau Data}
+
+This was by far the most difficult data to format. The java code to format the data looked very similar to the hate-group java code except this time 
+there were three different csv data to format and they were quite large. Using metadata it was possible to figure out which columns were needed to be added into the JSON data. However, there was one key difference between the hate-group data json format and census data format and that is the address to object format:
+\begin{verbatim}
+
+{  
+   "00601":{  
+      "hawaiian":0.0,
+      "female":51.1,
+      "nativeAmerican":0.4,
+      "male":48.9,
+      "white":93.1,
+      "black":3.1,
+      "asian":0.0,
+      "population":18570.0
+   },
+   "00602":{  
+      "hawaiian":0.0,
+      "female":50.9,
+      "nativeAmerican":0.3,
+      "male":49.1,
+      "white":86.7,
+      "black":5.3,
+      "asian":0.1,
+      "population":41520.0
+   },...
+}
+\end{verbatim}
+The reason for this is that the jsonobject are now setup like a hash map, making look up times when a user clicks on a section of the map constant, instead of linear which is very efficient. 
+The last thing that was needed to be done was to convert the data into state and county level instead of zip and so again using JavaScript code with google geocoder, that process was complete. 
+
+\begin{verbatim}
+{
+    "10001": {
+        "population": 116522,
+        "male": 56040,
+        "female": 60482,
+        "nativeAmerican": 852,
+        "black": 29782,
+        "white": 76371,
+        "hawaiian": 53,
+        "asian": 2745,
+        "other": 1796
+    },
+    "10003": {
+        "population": 564828,
+        "male": 273390,
+        "female": 291438,
+        "nativeAmerican": 1594,
+        "black": 133501,
+        "white": 371967,
+        "hawaiian": 147,
+        "asian": 23720,
+        "other": 206
+    },..
+]
+\end{verbatim}
+All the necessary JSON files were created for making an efficient interactive web-map, but a server to host and serve data is still in order. 
+\subsection{Server-side coding and hosting}
+There are two main reasons for creating a web-app rather than serving static HTML web-page. 
+
+\begin{enumerate}
+  \item Being able to serve some of the heavier JSON files in a http get request rather than including them in an HTML tag. Reason for this being is that the client side JavaScript can send an Ajax call 'asynchronously' saving initial loading time of the webpage. 
+  \item Easier deployment to a hosting server. By having web-app it’s easier to configure large number of files to a serviceable public webpage.
+\end{enumerate}
+Ultimately, the web-app framework that was decided on was nodeJS.  NodeJS is easy, clean, simple, written in JavaScript with minimal configuration that needed to be done. The server can easily be started on a localhost for testing by first running the 'npm install' command and then calling on 'node index.js'. The main functions that were needed to be added to the server side code were the http get methods.
+
+\begin{verbatim}
+app.get('/counties.json'
+, function(req, res) {
+  fs.readFile('public/data/counties.json'
+  , function(err, data) {
+    res.setHeader('Content-Type'
+    , 'application/json');
+    res.send(data);
+  });
+});
+\end{verbatim}
+So now calling on the serverurl/counties.json through a browser, will serve up the large json file. The reason this is useful again, is for 'asynchronously' loading the data from the client side which saves initial loading time of the webpage. 
+The next step was deploying the web-app to a server, so the map can be viewed from a public url. A simple server hosting service which was used was heroku. After installing heroku and with the use of a git repository running heroku create followed by git push heroku master deploys the web-app. 
+The web-app can now be accessed publicly through \url{https://hate-map.herokuapp.com/}. The last step and most crucial step to getting the interactive-map 
+working is setting up the HTML webpage with the necessary functionality of client-side JavaScript. 
+
+\subsection{Client-Side Javascript and HTML}
+
+After setting-up all the necessary components as the basis for building the map, it was time to actually configure and display the map. 
+
+\subsubsection{HTML and CSS}
+HTML and CSS are the view components of the map and are responsible for design rather than logic. 
+The html only has two major components, the map which takes up the entire screen and the legend which is responsible for serving up statistical information about the areas clicked. The legend has two possible tags that can fill it, either the data div or the no data p tag in case of missing data. It also includes a loading spinner in the center which is displayed for data that is still being loaded from an Ajax call. Data files that were small enough i.e. less than 1 megabyte, were simply added in an include tag. This is also the section that includes libraries that are going to be used including leaflet and Google’s chart API.
+
+\begin{verbatim}
+
+//Include tag
+<script type="text/javascript" 
+src="data/econstate.json" ></script>
+   
+//CSS descrinbing the legned
+#legend {
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 25px;
+    border-color: rgba(81, 181, 229, 1);
+    background-color: rgba(255, 255, 
+    255, 0.2);
+    padding: 5px;
+    display: none;
+}
+
+//Simplified html with the map, 
+//the loading spinner, and the legend
+<div id="map"></div>
+<div id="countyLoad" class="spinner" 
+style="visibility:hidden" > </div>
+<div style="position: absolute; 
+    bottom: 5%; left: 5%;" align="center">
+    <div  id="legend"  >
+    <h2 id="name"> </h2>
+    <p id="nodata" >No data available</p>
+    <div id="data">
+     <h4 id="population"></h4>
+     
+\end{verbatim}
+\subsubsection{Client-Side Javascript}
+The last step to creating the map and the core logic of how the map is going to operate, client-side javascript.
+The first step is to initialize both the google pi chart API and the Leaflet Map-API.
+
+\begin{verbatim}
+google.load("visualization", "1", 
+{packages:["corechart"]});
+window.onload = function () {
+map = L.map('map').setView([38,-105], 4);
+        
+//Adding open street map layer
+L.tileLayer('http://{s}.tile.osm.org
+/{z}/{x}/{y}.png', {
+attribution: '&copy;
+<a href="http://osm.org/copyright">]
+OpenStreetMap</a> contributors'
+}).addTo(map);
+
+map.options.maxZoom = MAX_ZOOM;
+map.options.minZoom = MIN_ZOOM;
+//Restrict viewing to only united states 
+map.setMaxBounds([[0, -180], [75, -40]]);
+\end{verbatim}
+This is when things become tricky, two layers are created. One for state level and the other for county level. Each layer consists of markers and geoJson,
+this is also the point where an ajax call is sent to the server to retreive the county geoJson data. A listener on the map zoom changed is also set, once the zoom-level goes beyoned a certain number the layers are switched, this ensures that the county level isn't overloading the map due to it 
+being displayed in a low zoom-level. 
+
+\begin{figure*} % figure* spans two columns, figure is just one column
+\centering
+\textbf{Layer levels}\par\medskip
+\includegraphics[width=1\textwidth,natwidth=1904,natheight=1075]{state.png}
+\caption 
+{State level, markers show number of hate groups in each state.}
+\end{figure*}
+
+\begin{figure*} % figure* spans two columns, figure is just one column
+\includegraphics[width=1\textwidth,natwidth=1904,natheight=1075]{county.png}
+\caption 
+{County level, markers show individual hate groups with icon representing their class. When markers are clicked a caption appers, which displays the name of the hate group and includes a link leading to an SPLC page that describes the hate group class.} 
+\end{figure*}
+
+\begin{verbatim}
+//The ajax call
+$.getJSON( "counties.json"
+, function( counties ) {
+    countyGeoJson = 
+    createGeoJsonLayer(counties);
+    countyLayer
+    .addLayer(countyGeoJson);
+    document.getElementById
+    ('countyLoad').style.visibility 
+    = 'hidden';
+})
+
+
+//The zoom listener
+map.on("zoomend", function(e){
+var zoom = map.getZoom();
+
+if(!STATE_LEVEL && zoom < 7 ){
+    STATE_LEVEL = true;
+    map.addLayer(stateLayer);
+    map.removeLayer(countyLayer);
+} else if(STATE_LEVEL && zoom >= 7) {
+    STATE_LEVEL = false;
+    map.addLayer(countyLayer);
+    map.removeLayer(stateLayer);
+    }
+});
+\end{verbatim}
+The last step involves implementing the on feature click function which happens when a layer is clicked on after we set a listener for the map.
+This is the part where specific data is being served to the user and extracted from all the data that was created in the first section.
+\begin{verbatim}
+if(STATE_LEVEL){
+    census = censusstate;
+    econ = econstate;
+    edu = edustate;
+    code =  this.feature.properties.STATE;
+} else{
+    document.getElementById("name")
+    .innerHTML =     
+    document.getElementById("name")
+    .innerHTML 
+    + " County";
+    census = censuscounty;
+    econ = econcounty;
+    edu = educounty;
+    var fipLength = 
+    this.feature.properties.GEO_ID.length;
+    code  =  
+    this.feature.properties.
+    GEO_ID.substring
+    (fipLength-5, fipLength)
+}
+
+var censusData = census[code]
+if(censusData == undefined){
+    //If data undefined show no data
+    document.getElementById("nodata")
+    .style.display = 'inline'; 
+    document.getElementById("data")
+    .style.display = 'none'; 
+    return
+} 
+document.getElementById("nodata")
+.style.display = 'none'; 
+document.getElementById("data")
+.style.display = 'inline'; 
+
+var population = 
+censusData.population
+
+//Calculating male percent 
+//to two decimal places
+var malePrecent = 
+((censusData.male/population)*100)
+.toFixed(2);
+var femalePerecent = 
+(100 - malePrecent).toFixed(2);
+
+document.getElementById("male-percent")
+.innerHTML = malePrecent + "%";
+document.getElementById("female-percent")
+.innerHTML = femalePerecent + "%";
+//Will print population with commas
+document.getElementById
+("population").innerHTML = 
+"Population: " 
++censusData.population.toString()
+.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+//Setting up pi chart
+var data = google.visualization
+.arrayToDataTable([
+    ['Race', 
+    'Population'],
+    ['White',    
+    censusData.white],
+    ['African-American',     
+     censusData.black],
+    ['Native-American',  
+    censusData.nativeAmerican],
+    ['Asian',
+     censusData.asian],
+    ['Hawaiian',   
+    censusData.hawaiian],
+    ['Other',
+    censusData.other  ]
+]);
+
+var options = {
+    title: 
+    'Racial Distribution',
+    'chartArea': 
+    {'width': '100%', 'height': '70%'},
+    'legend': 
+    {'position': 'bottom'},
+    backgroundColor: 
+    'transparent'
+};
+var chart = 
+new google.visualization
+.PieChart(document
+.getElementById('censusPieChart'));
+chart.draw(data, options);
+\end{verbatim}
+This takes care of most of the core functionality needed to create the interactive-map.
+
+
+
+%------------------------------------------------
+
+\section{Results and Conclusion}
+The map is publicly served on heroku and can be found at \url{https://hate-map.herokuapp.com/}. Hopefully, the SPLC and/or users looking for information
+about hate-groups in America will find it useful.
+
+
+%----------------------------------------------------------------------------------------
+%   REFERENCE LIST
+%----------------------------------------------------------------------------------------
+\begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
+\bibitem{southern64}
+"Southern Poverty Law Center." Southern Poverty Law Center. \href{http://www.splcenter.org/}{Web.}
+\bibitem{US64}
+ "United States Census Bureau." TIGER Products. 28 Apr. 2015. 
+ \href{https://www.census.gov/geo/maps-data/data/tiger.html}{Web.}
+\bibitem{jason64}   
+Block, Jason P., Richard A. Scribner, and Karen B. DeSlavo. "Fast Food, Race/ethnicity, and Income."  Oct. 2004.
+\href{http://www.ajpmonline.org/article/S0749-3797(04)00139-4/abstract?cc=y}{Web.}
+\bibitem{EPA64} 
+ "Laws Enforced by EEOC" (EPA). \href{http://www.eeoc.gov/laws/statutes/}{Web.}
+\bibitem{LW64}
+ "Louisiana Woman Tells Police Men Set Her on Fire in 'KKK' Attack." Theguardian. Oct. 2012 \href{http://www.theguardian.com/world/2012/oct/23/louisiana-woman-fire-kkk-attack}{Web.}
+\bibitem{NBC64}
+"Snapshot: Hate Crime in America, by the Numbers." NBC News. 28 Apr. 2015. \href{http://www.nbcnews.com/storyline/jewish-center-shootings/snapshot-hate-crime-america-numbers-n81521}{Web.}
+
+\end{thebibliography}
+
+%----------------------------------------------------------------------------------------
+
+\end{multicols}
+
+\end{document}
