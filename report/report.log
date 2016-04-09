@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.4.7)  8 APR 2016 19:18
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.4.7)  8 APR 2016 20:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -546,7 +546,7 @@ Package microtype Info: Character `029' is missing
  [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
 ]
-LaTeX Font Info:    Try loading font information for T1+cmtt on input line 142.
+LaTeX Font Info:    Try loading font information for T1+cmtt on input line 144.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
@@ -557,82 +557,83 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 
-Overfull \hbox (10.19514pt too wide) in paragraph at lines 145--145
+Overfull \hbox (10.19514pt too wide) in paragraph at lines 147--147
 [] \T1/cmtt/m/n/10 counties.geojson cb_2013_us_counties.shp[] 
  []
 
 
-Overfull \hbox (15.44386pt too wide) in paragraph at lines 156--156
+Overfull \hbox (15.44386pt too wide) in paragraph at lines 158--158
 []\T1/cmtt/m/n/10 CHAPTER NAME,CITY,STATE,MOVEMENT CLASS,ZIP[] 
  []
 
 
-Overfull \hbox (41.42502pt too wide) in paragraph at lines 156--156
+Overfull \hbox (41.42502pt too wide) in paragraph at lines 158--158
 []\T1/cmtt/m/n/10 Aryan Nations 88,Ashland,AL,Neo-Nazi,36251-0663[] 
  []
 
 
-Overfull \hbox (17.80579pt too wide) in paragraph at lines 156--156
+Overfull \hbox (17.80579pt too wide) in paragraph at lines 158--158
 []\T1/cmtt/m/n/10 Aryan Nations Knights of the Ku Klux Klan*,[] 
  []
 
 
-Overfull \hbox (3.63425pt too wide) in paragraph at lines 170--170
+Overfull \hbox (3.63425pt too wide) in paragraph at lines 172--172
 []\T1/cmtt/m/n/10 while ((line = br.readLine()) != null) {[] 
  []
 
 
-Overfull \hbox (3.37181pt too wide) in paragraph at lines 170--170
+Overfull \hbox (3.37181pt too wide) in paragraph at lines 172--172
 []    \T1/cmtt/m/n/10 JSONObject entry = new JSONObject();[] 
  []
 
 
-Overfull \hbox (12.8195pt too wide) in paragraph at lines 208--208
+Overfull \hbox (12.8195pt too wide) in paragraph at lines 210--210
 []        \T1/cmtt/m/n/10 "chapterName": "Aryan Nations 88",[] 
  []
 
 [2]
-Overfull \hbox (12.8195pt too wide) in paragraph at lines 222--222
+Overfull \hbox (12.8195pt too wide) in paragraph at lines 224--224
 []        \T1/cmtt/m/n/10 "chapterName": "Aryan Nations 88",[] 
  []
 
 [3]
-Overfull \hbox (8.09566pt too wide) in paragraph at lines 328--328
+Overfull \hbox (8.09566pt too wide) in paragraph at lines 330--330
 []  \T1/cmtt/m/n/10 fs.readFile('public/data/counties.json'[] 
  []
 
 [4]
-Overfull \hbox (3.37181pt too wide) in paragraph at lines 373--373
+Overfull \hbox (3.37181pt too wide) in paragraph at lines 375--375
 []    \T1/cmtt/m/n/10 border-color: rgba(81, 181, 229, 1);[] 
  []
 
 
-Overfull \hbox (14.39412pt too wide) in paragraph at lines 373--373
+Overfull \hbox (14.39412pt too wide) in paragraph at lines 375--375
 []    \T1/cmtt/m/n/10 bottom: 5%; left: 5%;" align="center">[] 
  []
 
 
-Overfull \hbox (9.1454pt too wide) in paragraph at lines 373--373
+Overfull \hbox (9.1454pt too wide) in paragraph at lines 375--375
 []    \T1/cmtt/m/n/10 <p id="nodata" >No data available</p>[] 
  []
 
 
-Overfull \hbox (8.62053pt too wide) in paragraph at lines 396--396
+Overfull \hbox (8.62053pt too wide) in paragraph at lines 398--398
 []\T1/cmtt/m/n/10 map = L.map('map').setView([38,-105], 4);[] 
  []
 
 
-Overfull \hbox (4.42155pt too wide) in paragraph at lines 396--396
+Overfull \hbox (4.42155pt too wide) in paragraph at lines 398--398
 []\T1/cmtt/m/n/10 //Restrict viewing to only united states[] 
  []
 
 
-Overfull \hbox (8.62053pt too wide) in paragraph at lines 396--396
+Overfull \hbox (8.62053pt too wide) in paragraph at lines 398--398
 []\T1/cmtt/m/n/10 map.setMaxBounds([[0, -180], [75, -40]]);[] 
  []
 
+[5]
 
-LaTeX Warning: File `state.png' not found on input line 404.
+LaTeX Warning: File `state.png' not found on input line 406.
 
 
 ! Package pdftex.def Error: File `state.png' not found.
@@ -641,19 +642,13 @@ See the pdftex.def package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.404 ...,natwidth=1904,natheight=1075]{state.png}
+l.406 ...,natwidth=1904,natheight=1075]{state.png}
                                                   
-? ^^[[3~^^[[3~
-Type <return> to proceed, S to scroll future error messages,
-R to run without stopping, Q to run quietly,
-I to insert something, E to edit your file,
-1 or ... or 9 to ignore the next 1 to 9 tokens of input,
-H for help, X to quit.
 ? 
 LaTeX Font Info:    Font shape `T1/pplx/bx/n' in size <9> not available
-(Font)              Font shape `T1/pplx/b/n' tried instead on input line 406.
+(Font)              Font shape `T1/pplx/b/n' tried instead on input line 408.
 
-LaTeX Warning: File `county.png' not found on input line 410.
+LaTeX Warning: File `county.png' not found on input line 412.
 
 
 ! Package pdftex.def Error: File `county.png' not found.
@@ -662,62 +657,62 @@ See the pdftex.def package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.410 ...natwidth=1904,natheight=1075]{county.png}
+l.412 ...natwidth=1904,natheight=1075]{county.png}
                                                   
 ? 
-[5] [6] [7]
-Overfull \hbox (13.86925pt too wide) in paragraph at lines 539--539
+
+Overfull \hbox (13.86925pt too wide) in paragraph at lines 541--541
 []    \T1/cmtt/m/n/10 code =  this.feature.properties.STATE;[] 
  []
 
 
-Overfull \hbox (13.86925pt too wide) in paragraph at lines 539--539
+Overfull \hbox (13.86925pt too wide) in paragraph at lines 541--541
 []    \T1/cmtt/m/n/10 this.feature.properties.GEO_ID.length;[] 
  []
 
 
-Overfull \hbox (9.1454pt too wide) in paragraph at lines 539--539
+Overfull \hbox (9.1454pt too wide) in paragraph at lines 541--541
 []\T1/cmtt/m/n/10 document.getElementById("female-percent")[] 
  []
 
-[8]
-Underfull \hbox (badness 10000) in paragraph at lines 558--559
+[6] [7] [8]
+Underfull \hbox (badness 10000) in paragraph at lines 560--561
 []\T1/pplx/m/n/10 (+20) "Telegram – a New Era of
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 558--559
+Underfull \hbox (badness 10000) in paragraph at lines 560--561
 \T1/pplx/m/n/10 (+20) Mes-sag-ing." Tele-gram. N.p., n.d.
  []
 
 
-Underfull \hbox (badness 5726) in paragraph at lines 562--563
+Underfull \hbox (badness 5726) in paragraph at lines 564--565
 []\T1/pplx/m/n/10 (+20) Wauters, Robin. "Sup-pos-edly Su-per
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 562--563
+Underfull \hbox (badness 10000) in paragraph at lines 564--565
 \T1/pplx/m/n/10 (+20) super-secure-telegram-app-possibly-
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 570.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 572.
 [9]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 570.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 572.
  (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 570.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 570.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 572.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 572.
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: DEF857EB1BB1BB9079000FA8935A39FF;758.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 570.
+(rerunfilecheck)             Checksum: 7A114AAB8CC1F20CDBEDABBE4D3093A9;781.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 572.
  ) 
 Here is how much of TeX's memory you used:
- 9605 strings out of 493304
- 147107 string characters out of 6139872
- 357651 words of memory out of 5000000
+ 9607 strings out of 493304
+ 147145 string characters out of 6139872
+ 362651 words of memory out of 5000000
  12683 multiletter control sequences out of 15000+600000
- 60378 words of font info for 224 fonts, out of 8000000 for 9000
+ 59242 words of font info for 227 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 36i,13n,43p,650b,687s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,13n,43p,650b,681s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}{/usr/share/texliv
 e/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texlive/texmf-dist/fonts/t
 ype1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
@@ -725,10 +720,10 @@ ublic/fpl/fplrc8a.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1000.pf
 b></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/share/texlive/te
 xmf-dist/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on report.pdf (9 pages, 135782 bytes).
+Output written on report.pdf (9 pages, 137613 bytes).
 PDF statistics:
  150 PDF objects out of 1000 (max. 8388607)
  131 compressed objects within 2 object streams
  32 named destinations out of 1000 (max. 500000)
- 47705 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 43609 words of extra memory for PDF output out of 51595 (max. 10000000)
 

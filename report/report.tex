@@ -100,9 +100,9 @@ discussed. Charts showing speed comparisons of sending messages over lan or wifi
 
 \begin{multicols}{2} % Two-column layout throughout the main article text
 
-\section{Introduction}
+\subsection{Introduction}
 
-\lettrine[nindent=0em,lines=3]{I}nstant messaging has become one of the most practical ways we communicate with one another. In this day and age, instead of having to send mail across the physical plane and
+\lettrine[nindent=0em,lines=3]{I}{}nstant messaging has become one of the most practical ways we communicate with one another. In this day and age, instead of having to send mail across the physical plane and
 wait one to four business weeks to hear back from family relatives or friends, we can simply pull out our mobile device, type a 
 message and send it in nearly an instant. While such power as reduced our face to face communication \cite{hemmer}, one can't deny the
 advantages this tool could bring working within a unix terminal. For us developers and
@@ -120,24 +120,26 @@ a messaging application that is decentralized is missing from the terminal tool 
 application. 
 %------------------------------------------------
 
-\section{Design}
 
-There will be three main components to designing the CLI messaging application. 
+\subsection{Design}
+
+The CLI messaging application will be programmed in C. There will be three main components to designing the CLI messaging application.
 
 \begin{enumerate}
   \item The CLI features, frontend
-  \item Communication between two nodes using TCP
+  \item Communication between nodes 
   \item Avoiding security risks 
 \end{enumerate}
 
 
-\subsection{The CLI features, frontend}
-A user will interact with CLI, it will provide set of commands and features. The help command will let one see all commands and this 
-will come up when the user types in a wrong command. Add command that will take in two paramaters one being the ip and the other 
-being the nickname for the user. This will add a new user that you can quickly communicate with. Message command which will take either an ip or a nickname and establish a communication messaging channel with that ip. Once a messaging channel has been established one can see all previous messages with that ip. The CLI will also notify the user when one of his added friends goes online or goes offline. 
+\subsubsection{The CLI features, frontend}
+A user will interact with an interactive CLI, it will provide a set of commands and features. The help command will let the user see all available commands and a description of how to use them. The user 
+will be notified about this command when the user types in a wrong command. The add command that will take in two paramaters one being the IP and the other 
+being the nickname for the user. This will add a new friend that you can quickly setup communication with. The message command which will take either an ip address or a nickname and establish a communication messaging channel with that IP address. Once a messaging channel has been established one can see all previous messages with that IP address. The delete command will let one delete all previous messages with the user that is currently being messaged with. The quit command will also be avialable which will exit the application either 
+by calling quit or pressing CTRL+D. The CLI will also notify the user when one of his added friends goes online or offline and be notified when a new message is received.
+\subsubsection{Communication between nodes }
+A communication between two nodes will be done via TCP/IP connection using socket programming. Currently the application is limited to being able to establish a messaging channel between you and one other user, but might be expanded to group chat in future releases. Sicne a TCP connection cannot be established if another node is offline, the messaging will work as follows. You can send a message to an offline user, but he/she will only receive it later when both of you are online. This also makes the delete command more powerful, if the other user is offline you can delete the messages that you have sent.
 
-\subsubsection{GeoJSON}
-It was decided that the map will be subdivided into state-level and county-level. To setup the geoJsons required, public shape files from the USCB were downloaded and converted using the following command from GDAL:
 
 \begin{verbatim}
  ogr2ogr -f GeoJSON -t_srs EPSG:4326 
