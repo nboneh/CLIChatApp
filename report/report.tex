@@ -54,21 +54,20 @@
 \pagestyle{fancy} % All pages have headers and footers
 \fancyhead{} % Blank out the default header
 \fancyfoot{} % Blank out the default footer
-\fancyhead[C]{CLI Chat App $\bullet$ April 2016 } % Custom header text
+\fancyhead[C]{CLI Messaging Application $\bullet$ April 2016 } % Custom header text
 \fancyfoot[RO,LE]{\thepage} % Custom footer text
 
 %----------------------------------------------------------------------------------------
 %   TITLE SECTION
 %----------------------------------------------------------------------------------------
 
-\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{CLI Chat Application}} % Article title
+\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{CLI Messaging Application}} % Article title
 
 \author{
 \large
 \textsc{Nir Boneh}\\[2mm] % Your name
 \normalsize University of Colorado Boulder \\ % Your institution
-\normalsize \href{mailto:nir.boneh@colorado.edu}{nir.boneh@colorado.edu} % Your email address
-\normalsize \href Source Code: {https://github.com/nboneh/CLIChatApp}{https://github.com/nboneh/CLIChatApp}                    % SouceCode
+\normalsize \href{mailto:nir.boneh@colorado.edu}{nir.boneh@colorado.edu} \\ % Your email address
 \vspace{-5mm}
 }
 \date{}
@@ -88,9 +87,10 @@
 \begin{abstract}
 
 \noindent
-This research paper deals closely with the creation of an interactive web-map and the specifics of creating one.
-The created interactive map can be found at \url{https://hate-map.herokuapp.com/} and aims to show correlation
-between the inhabitants of hate-groups in America and racial spread, income level, and quality of education.
+This project discusses the creation and design of a decentarlized CLI unix-based messaging application written in C. Examining 
+closley on how to elimnate security risks and interospecting on the usefullness of the application in various situations. The 
+advantages of using this application over other similiar application in areas such as security, practicality, and speed is also 
+discussed. Charts showing speed comparisons of sending messages over lan or wifi are also shown. The source code for the project can be found at \href{https://github.com/nboneh/CLIMessageApp}{https://github.com/nboneh/CLIMessageApp} and the repository can be used for downloading and installing the application.
 
 \end{abstract}
 
@@ -102,24 +102,39 @@ between the inhabitants of hate-groups in America and racial spread, income leve
 
 \section{Introduction}
 
-\lettrine[nindent=0em,lines=3]{T}he Southern Poverty Law Center (SPLC), a US government organization dedicated to fight bigotry and hate, managed to gather information of over 1000 hate groups residing within America in 2010. These groups commit hate-crimes that instill paranoia in US citizens such as in 2012 a black woman told police that three-men from the KKK set her on fire and the beating of a gay college student named Mathew Shepard in October 1998. How does an individual of a specific targeted group avoid residing closely to an existing hate-group, or citizens that have the potential to form such hate-groups? This research paper will aim to describe how to create an interactive-map in detail, displaying data that might be helpful in showing if there exists a correlation between the inhabitants of these hate-groups with the location's racial spread, income level, and quality of education. Hopefully, the map created from the research can be useful in eliminating the causes that lead to the creation of such hate-groups or just providing clarity of type of areas that should be avoided for individual safety.
-
+\lettrine[nindent=0em,lines=3]{I}nstant messaging has become one of the most practical ways we communicate with one another. In this day and age, instead of having to send mail across the physical plane and
+wait one to four business weeks to hear back from family relatives or friends, we can simply pull out our mobile device, type a 
+message and send it in nearly an instant. While such power as reduced our face to face communication \cite{hemmer}, one can't deny the
+advantages this tool could bring working within a unix terminal. For us developers and
+UNIX enthusiasts, spending most of our time on a terminal managing files and building application; A CLI tool that allows messanging quickly from the 
+terminal, would be nice to have added to our vast arsenel of gadgets that are within 
+our efficient terminal fingertips. Not to mention such an application would be extremely practical in a situation where we are limited 
+to just a terminal, such as with special types of machines or on remote ssh. While a great messaging CLI application does exist, 
+called telegram \cite{telegram}, it does not serve the purpose of being a decenteralized application. That means that big brother 
+could be watching your messages not to mention that security attacks could happen to the the telegram server which is stated to be 
+vulnerable to MITM attacks according to a tech.eu article \cite{wauters}. The other risk is that the server could go offline 
+rendering the application useless. There is also a great chat application that is decentralized called chat terminal \cite{lanchat}. 
+While it works great it's missing the key advantage of messaging which is being able to send a message while the other user is 
+offline which could come in handy. Therefore,
+a messaging application that is decentralized is missing from the terminal tool arsenel which is the main focus of the CLI messaging 
+application. 
 %------------------------------------------------
 
-\section{Methods}
+\section{Design}
 
-Creating an interactive map for the hate-group data from the SPLC and also displaying information about the various areas income level, racial spread, and quality of education from the United States Census Bureau (USCB) involves three large steps. 
+There will be three main components to designing the CLI messaging application. 
 
 \begin{enumerate}
-  \item Gathering, formatting, and manipulating data into proper, easy to user JSON format.
-  \item Setting up server side code with useful HTTP get methods that serve JSON data. This step also involves figuring out how to host the server publicly.
-  \item Hacking an HTML webpage with the emphasis being on the client-side JavaScript, which will contain the core logic for the map's functionality. 
+  \item The CLI features, frontend
+  \item Communication between two nodes using TCP
+  \item Avoiding security risks 
 \end{enumerate}
 
 
-\subsection{Data Gathering, Formatting, and Manipulating}
-Data gathering and formatting is a crucial component of making the map serve-up intresting data quickly and efficently.
-Before even-looking into the hate-group data and the USCB data, a setup of geoJson subdividing the United States map, will be the first thing that needs to be setup. 
+\subsection{The CLI features, frontend}
+A user will interact with CLI, it will provide set of commands and features. The help command will let one see all commands and this 
+will come up when the user types in a wrong command. Add command that will take in two paramaters one being the ip and the other 
+being the nickname for the user. This will add a new user that you can quickly communicate with. Message command which will take either an ip or a nickname and establish a communication messaging channel with that ip. Once a messaging channel has been established one can see all previous messages with that ip. The CLI will also notify the user when one of his added friends goes online or goes offline. 
 
 \subsubsection{GeoJSON}
 It was decided that the map will be subdivided into state-level and county-level. To setup the geoJsons required, public shape files from the USCB were downloaded and converted using the following command from GDAL:
@@ -537,20 +552,14 @@ about hate-groups in America will find it useful.
 %   REFERENCE LIST
 %----------------------------------------------------------------------------------------
 \begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
-\bibitem{southern64}
-"Southern Poverty Law Center." Southern Poverty Law Center. \href{http://www.splcenter.org/}{Web.}
-\bibitem{US64}
- "United States Census Bureau." TIGER Products. 28 Apr. 2015. 
- \href{https://www.census.gov/geo/maps-data/data/tiger.html}{Web.}
-\bibitem{jason64}   
-Block, Jason P., Richard A. Scribner, and Karen B. DeSlavo. "Fast Food, Race/ethnicity, and Income."  Oct. 2004.
-\href{http://www.ajpmonline.org/article/S0749-3797(04)00139-4/abstract?cc=y}{Web.}
-\bibitem{EPA64} 
- "Laws Enforced by EEOC" (EPA). \href{http://www.eeoc.gov/laws/statutes/}{Web.}
-\bibitem{LW64}
- "Louisiana Woman Tells Police Men Set Her on Fire in 'KKK' Attack." Theguardian. Oct. 2012 \href{http://www.theguardian.com/world/2012/oct/23/louisiana-woman-fire-kkk-attack}{Web.}
-\bibitem{NBC64}
-"Snapshot: Hate Crime in America, by the Numbers." NBC News. 28 Apr. 2015. \href{http://www.nbcnews.com/storyline/jewish-center-shootings/snapshot-hate-crime-america-numbers-n81521}{Web.}
+\bibitem{hemmer}
+Hemmer, Heidi. "Impact of Text Messaging on Communication." Minnesota State University, Mankato, 2009.
+\bibitem{telegram}
+"Telegram – a New Era of Messaging." Telegram. N.p., n.d.  \href{https://telegram.org/}{https://telegram.org/}
+\bibitem{lanchat}
+ "LAN Chat and Text Conferencing in Easiest Way with Vypress Chat." Chat Terminal. N.p., n.d.  \href{https://www.census.gov/geo/maps-data/data/tiger.html}{https://telegram.org/}
+\bibitem{wauters}  
+Wauters, Robin. "Supposedly Super Secure Telegram App Is Vulnerable to MITM Attacks, Cybersecurity Expert Claims." Tech.eu. N.p., 29 Apr. 2014.  \href{http://tech.eu/brief/supposedly-super-secure-telegram-app-possibly-vulnerable/}{http://tech.eu/brief/supposedly-super-secure-telegram-app-possibly-vulnerable/} 
 
 \end{thebibliography}
 

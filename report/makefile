@@ -1,5 +1,5 @@
 report.pdf: report.tex
-	pdflatex repot.tex
+	pdflatex report.tex
 
 PDF: report.pdf
 	xpdf report.pdf
