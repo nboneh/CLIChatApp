@@ -38,6 +38,7 @@
 \usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
 \usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
 \usepackage{graphicx} % Used for including images
+\usepackage{placeins}
 \graphicspath{ {images/} }
 
 
@@ -86,9 +87,9 @@
 \begin{abstract}
 
 \noindent
-This project discusses the creation and design of a decentarlized CLI unix-based messaging application written in C. Examining 
-closley on how to elimnate security risks and interospecting on the usefullness of the application in various situations. The 
-advantages of using this application over other similiar application in areas such as security, practicality, and speed is also 
+This project discusses the creation and design of a decentralized CLI unix-based messaging application written in C. Examining 
+closely on how to eliminate security risks and introspecting on the usefulness of the application in various situations. The 
+advantages of using this application over other similar application in areas such as security, practicality, and speed is also 
 discussed. Charts showing speed comparisons of sending messages over lan or wan are also shown. The source code for the project can be found at \href{https://github.com/nboneh/CLIMessageApp}{https://github.com/nboneh/CLIMessageApp} and the repository can be used for downloading and installing the application.
 
 \end{abstract}
@@ -105,17 +106,17 @@ discussed. Charts showing speed comparisons of sending messages over lan or wan 
 wait one to four business weeks to hear back from family relatives or friends, we can simply pull out our mobile device, type a 
 message and send it in nearly an instant. While such power as reduced our face to face communication \cite{hemmer}, one can't deny the
 advantages this tool could bring working within a unix terminal. For us developers and
-UNIX enthusiasts, spending most of our time on a terminal managing files and building application; A CLI tool that allows messanging quickly from the 
-terminal, would be nice to have added to our vast arsenel of gadgets that are within 
+UNIX enthusiasts, spending most of our time on a terminal managing files and building application; A CLI tool that allows messaging quickly from the 
+terminal, would be nice to have added to our vast arsenal of gadgets that are within 
 our efficient terminal fingertips. Not to mention such an application would be extremely practical in a situation where we are limited 
 to just a terminal, such as with special types of machines or on remote ssh. While a great messaging CLI application does exist, 
-called telegram \cite{telegram}, it does not serve the purpose of being a decenteralized application. That means that big brother 
+called telegram \cite{telegram}, it does not serve the purpose of being a decentralized application. That means that big brother 
 could be watching your messages not to mention that security attacks could happen to the the telegram server which is stated to be 
 vulnerable to MITM attacks according to a tech.eu article \cite{wauters}. The other risk is that the server could go offline 
 rendering the application useless. There is also a great chat application that is decentralized called chat terminal \cite{lanchat}. 
 While it works great it's missing the key advantage of messaging which is being able to send a message while the other user is 
 offline which could come in handy. Therefore,
-a messaging application that is decentralized is missing from the terminal tool arsenel which is the main focus of the CLI messaging 
+a messaging application that is decentralized is missing from the terminal tool arsenal which is the main focus of the CLI messaging 
 application. 
 %------------------------------------------------
 
@@ -133,15 +134,15 @@ The CLI messaging application will be programmed in C. There will be three main 
 
 \subsection{The CLI features, frontend}
 A user will interact with an interactive CLI, it will provide a set of commands and features. The help command will let the user see all available commands and a description of how to use them. The user 
-will be notified about this command when the user types in a wrong command. The add command that will take in two paramaters one being the IP and the other 
-being the nickname for the user. This will add a new contact that you can quickly setup communication with. The message command which will take either an ip address or a nickname and establish a communication messaging channel with that IP address. Once a messaging channel has been established one can see all previous messages with that IP address. The delete command will let one delete all previous messages with the user that is currently being messaged with. The quit command will also be avialable which will exit the application either 
+will be notified about this command when the user types in a wrong command. The add command that will take in two parameters one being the IP and the other 
+being the nickname for the user. This will add a new contact that you can quickly setup communication with. The message command which will take either an ip address or a nickname and establish a communication messaging channel with that IP address. Once a messaging channel has been established one can see all previous messages with that IP address. The delete command will let one delete all previous messages with the user that is currently being messaged with. The quit command will also be available which will exit the application either 
 by calling quit or pressing CTRL+D. The CLI will also notify the user when a new message is received.
 \subsection{Communication between nodes }
 A communication between two nodes will be done via TCP/IP connection using socket programming. Currently the application is limited to being able to establish a messaging channel between you and one other user, but might be expanded to group chat in future releases. Sicne a TCP connection cannot be established if another node is offline, the messaging will work as follows. You can send a message to an offline user, but he/she will only receive it later when both of you are online. This also makes the delete command more powerful, if the other user is offline you can delete the messages that you have sent.
 \subsection{Avoiding security risks}
-There are two main security risks that will be addressed when building the application. The first one being making sure to encrypt messages between two nodes so no one can decipher them, this will be addressed using RSA through the use of a public key and private key. The second problem is being able to share a public key on a non-secure channel which will be addressed using Diffie–Hellman key exchange.
+There are two main security risks that will be addressed when building the application. The first one being making sure to encrypt messages between two nodes so no one can decipher them, this will be addressed using RSA through the use of a public key and private key. The second problem is being able to share a public key on a non-secure channel which will be addressed using Diffie Hellman key exchange.
 \subsubsection{RSA for secure communication}
-The general idea of RSA works as follows, each user has a public key and a private key which they can generate using the RSA algorith. Upon generating these two keys, a user can share his public key with 
+The general idea of RSA works as follows, each user has a public key and a private key which they can generate using the RSA algorithm. Upon generating these two keys, a user can share his public key with 
 everyone, but keeps 
 the private key to himself. Now anyone who wants to share secure messages with another user, encrypts the message using the user public key, but the message can only be decrypted using the private key. Therefore, no 
 one can read messages sent to the user other than the intended user himself. This will be the main method of communication when two users are sending messages back and forth using the application. The RSA algorithm involves generating two large prime numbers and multiplying them togther to get a composite, in order for anyone to 
@@ -149,14 +150,14 @@ crack the RSA algorithm it would require being able to figure out the two prime 
 trust RSA to be a rather secure algorithm.
 \subsubsection{Diffie Hellman key exchange}
 The only issue with the RSA method alone is that the user needs to share his public key with another user on a non-secure channel and this 
-is where security risks are prone, this is where Diffie Hellman key exchange comes into play. Here is a possible security risk that comes into play when sharing a public key on a non-secure channel called Man in the middle attack. Let's imagine two users Alice and Bob, and a malicious user called Chris, here is how a man in the middle attack will play out:
+is where security risks are prone, this is where Diffie Hellman key exchange comes into play. One possible security risk that could happen when sharing a public key on a non-secure channel is called man in the middle attack. Let's imagine two users Alice and Bob, and a malicious user called Chris, here is how a man in the middle attack will play out:
 
 \begin{enumerate}
   \item Bob sends a package to Alice: Hey Alice this is Bob, here is my public key: Bob's key.
   \item Chris intercepts the message and swaps out Bob's key with his own key.
-  \item Alice receives the message and think that Bob's key is acctually Chris's key.
-  \item Alice sends back an encrpyted message using Chris's key sharing her public key. 
-  \item Chris intercepts that message as well and decrypts it with his key changes it to his key.
+  \item Alice receives the message and think that Bob's key is actually Chris's key.
+  \item Alice sends back an encrypted message using Chris's key sharing her public key. 
+  \item Chris intercepts that message as well, and decrypts it with his key and changes Alice's key to his key.
   \item Bob receives the message and assume Alice's key is Bob's key.
   \item From this point on Chris has got all the power over the conversation, being able to see it and also change it as he likes. 
 \end{enumerate}
@@ -173,10 +174,10 @@ The only way to avoid such a terrible scenario is using the Diffie Hellman key e
 
 While it is true that a man in the middle attack could disrupt the handshake, it will not be able to gain power over the conversation, since it can not know the fourth color. If a man in the middle attack those disrupt the process, the handshake can be retried over and over till he gets bored and moves on. So, basically the way the application will avoid security risks is by sharing public keys using Diffie Hellman and from there messages will be exchanged using RSA.
 
-\section{Eveluation}
+\section{Evaluation}
 
 \subsection{Methodology}
-Inorder to compare the efficiency of the application, we will compare it to the well known CLI centeralized messaging application called Telegram. Specifically we will compare the speed of sending a message using the CLI Messaging application and compare it to the speed of telegram. The CLI messaging application will be tested over WAN and LAN networks and the Telegram will be tested normally since, you have to send a message through a server. We will test the speed on short messages, medium messages, and long messages and average the speed of three instances of each. In the CLI Messaging application we will setup testing code to check on the speed of sending a message. For the telegram we will construct what they call a bot and send a message using CURL and eveluate the speed when using the command. We would first obtain a chat id using 
+In Order to compare the efficiency of the application, we will compare it to the well known CLI centralized messaging application called Telegram. Specifically we will compare the speed of sending a message using the CLI Messaging application and compare it to the speed of telegram. The CLI messaging application will be tested over WAN and LAN networks and the Telegram will be tested normally, since you have to send a message through a server. We will test the speed on short messages, medium messages, and long messages and average the speed of three instances of each. In the CLI Messaging application we will setup testing code to check on the speed of sending a message. For the telegram we will create what telegram calls a bot and send a message using CURL and eveluate the speed of the curl command using the UNIX time command. We would first obtain a chat id using 
 \begin{lstlisting}
 curl -s \ 
 -X POST 
@@ -194,23 +195,25 @@ curl -s \
 \-d chat_id=65535 \ 
 | jq .
 \end{lstlisting} 
-
+\centering
 \subsection{Results}
+\begin{table*}[t]
+\centering
 \begin{tabular}{ |p{3cm}||p{3cm}|p{3cm}|p{3cm}|  }
  \hline
- \multicolumn{4}{|c|}{Messaging Speed} \\
+ \multicolumn{4}{|c|}{Messaging Speed (Seconds)} \\
  \hline
- Country Name     or Area Name& ISO ALPHA 2 Code &ISO ALPHA 3 Code&ISO numeric Code\\
+Message Length& Telegram &CLI Messaging App LAN &CLI Messaging App WAN \\
  \hline
- Afghanistan   & AF    &AFG&   004\\
- Aland Islands&   AX  & ALA   &248\\
- Albania &AL & ALB&  008\\
- Algeria    &DZ & DZA&  012\\
- American Samoa&   AS  & ASM&016\\
- Andorra& AD  & AND   &020\\
- Angola& AO  & AGO&024\\
+ Short (10 chars)   &0.764&N/A&   N/A\\
+ Medium (50 chars)&0.771  & N/A&   N/A\\
+ Long (200 chars) &0.782 & N/A&  N/A\\
  \hline
 \end{tabular}
+\caption{ Shows speed comparison of CLI Messaging App on LAN and WAN network as well as telegram}
+\end{table*}
+\FloatBarrier
+
 %----------------------------------------------------------------------------------------
 %   REFERENCE LIST
 %----------------------------------------------------------------------------------------
@@ -233,3 +236,4 @@ Wauters, Robin. "Supposedly Super Secure Telegram App Is Vulnerable to MITM Atta
 \end{multicols}
 
 \end{document}
+
