@@ -1,11 +1,10 @@
-\BOOKMARK [2][-]{subsection.0.1}{Introduction}{}% 1
-\BOOKMARK [2][-]{subsection.0.2}{Design}{}% 2
-\BOOKMARK [3][-]{subsubsection.0.2.1}{The CLI features, frontend}{subsection.0.2}% 3
-\BOOKMARK [3][-]{subsubsection.0.2.2}{Communication between nodes }{subsection.0.2}% 4
-\BOOKMARK [3][-]{subsubsection.0.2.3}{Hate Data}{subsection.0.2}% 5
-\BOOKMARK [3][-]{subsubsection.0.2.4}{United States Census Bureau Data}{subsection.0.2}% 6
-\BOOKMARK [2][-]{subsection.0.3}{Server-side coding and hosting}{}% 7
-\BOOKMARK [2][-]{subsection.0.4}{Client-Side Javascript and HTML}{}% 8
-\BOOKMARK [3][-]{subsubsection.0.4.1}{HTML and CSS}{subsection.0.4}% 9
-\BOOKMARK [3][-]{subsubsection.0.4.2}{Client-Side Javascript}{subsection.0.4}% 10
-\BOOKMARK [1][-]{section.1}{Results and Conclusion}{}% 11
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Design}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{The CLI features, frontend}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Communication between nodes }{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Avoiding security risks}{section.2}% 5
+\BOOKMARK [3][-]{subsubsection.2.3.1}{RSA for secure communication}{subsection.2.3}% 6
+\BOOKMARK [3][-]{subsubsection.2.3.2}{Diffie Hellman key exchange}{subsection.2.3}% 7
+\BOOKMARK [1][-]{section.3}{Eveluation}{}% 8
+\BOOKMARK [2][-]{subsection.3.1}{Methodology}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.2}{Results}{section.3}% 10
