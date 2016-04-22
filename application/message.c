@@ -1,4 +1,4 @@
-/* hw1.c -- Nir Boned cmd line
+/* message.c -- Nir Boneh messaging application
  */
 
 
