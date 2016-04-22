@@ -8,6 +8,18 @@
 #include <sys/types.h>
 #include <string.h>
 #include <signal.h>
+#include "hashmap.h"
+
+#define KEY_MAX_LENGTH (256)
+map_t contacts;
+
+void loadContacts(){
+  contacts = hashmap_new();
+}
+
+void saveContacts(){
+
+}
 
 void  parseCmd(char *cmd, char **argv)
 {    
@@ -30,10 +42,15 @@ void  parseCmd(char *cmd, char **argv)
 }
 
 void add(char *IP, char *contactname){
-
+   hashmap_put(contacts, contactname, IP);
+   saveContacts();
 }
 
 int main() {
+
+  //Loading contacts
+  loadContacts();
+
   char cmd[BUFSIZ];
 
   //Getting username for prompt   
@@ -78,6 +95,7 @@ int main() {
       printf("message (IP/contactname) - start messaging with the specific IP or contanct\n");
       printf("add (IP) (contactname) - this will add a new contact based on IP address\n");
       printf("delete (contactname) - allows you remove a contanct\n");
+      printf("contacts - shows all your contacts");
       printf("quit or Ctrl-D - in order to exit the application\n");
     } else if(strcmp(cmd,"quit") == 0){
       //Exiting on quit command
@@ -86,8 +104,9 @@ int main() {
     } else{
       printf("Invalid command, type help for list of commands\n");
     }
-    
-
   } 
+
+  saveContacts();
+  hashmap_free(contacts);
   return 0; 
 }
