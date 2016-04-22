@@ -42,9 +42,27 @@ void  parseCmd(char *cmd, char **argv)
 }
 
 void add(char *IP, char *contactname){
-   hashmap_put(contacts, contactname, IP);
-   saveContacts();
+  int error = hashmap_put(contacts, contactname, IP);
+  if(error==MAP_OK){
+    printf("Successfully added %s\n", contactname);
+  }else {
+    printf("Error adding %s\n", contactname);
+    return;
+  }
+  saveContacts();
 }
+
+void removec(char *contactname){
+  int error = hashmap_remove(contacts, contactname);
+  if(error==MAP_OK){
+    printf("Successfully removed %s\n", contactname);
+  }else {
+    printf("Error removing %s\n", contactname);
+    return;
+  }
+  saveContacts();
+}
+
 
 int main() {
 
@@ -88,13 +106,24 @@ int main() {
         continue;
       }
       add(argv[1], argv[2]);
+    } else if(strlen(cmd) >= 6 && cmd[0] == 'r' && cmd[1] == 'e' && cmd[2] == 'm' && cmd[3] == 'o' && cmd[4] == 'v' && cmd[5] == 'e'){
+       //remove contact
+      int argv_size = 2;
+      char *argv[argv_size];
+      argv[1] = NULL;
+      parseCmd(cmd, argv);
 
+      if(argv[1] == NULL){
+        printf("Invalid use of remove command, type help for list of commands\n");
+        continue;
+      }
+      removec(argv[1]);
     } else if(strcmp(cmd, "help") == 0){
       //help
       printf("Commands:\n");
       printf("message (IP/contactname) - start messaging with the specific IP or contanct\n");
       printf("add (IP) (contactname) - this will add a new contact based on IP address\n");
-      printf("delete (contactname) - allows you remove a contanct\n");
+      printf("remove (contactname) - allows you remove a contanct\n");
       printf("contacts - shows all your contacts");
       printf("quit or Ctrl-D - in order to exit the application\n");
     } else if(strcmp(cmd,"quit") == 0){
