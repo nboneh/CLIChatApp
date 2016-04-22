@@ -10,8 +10,12 @@
 #include <signal.h>
 #include "hashmap.h"
 
-#define KEY_MAX_LENGTH (256)
 map_t contacts;
+
+int parseShow(char *ip, char *contactname){
+  printf("%s, %s\n", ip, contactname);
+  return MAP_OK;
+}
 
 void loadContacts(){
   contacts = hashmap_new();
@@ -118,6 +122,12 @@ int main() {
         continue;
       }
       removec(argv[1]);
+
+    } else if(strcmp(cmd, "contacts") == 0){
+      //Display contacts
+      printf("Contact, IP Address\n");
+      PFany parser = (PFany)&parseShow;
+      hashmap_iterate(contacts, parser);
     } else if(strcmp(cmd, "help") == 0){
       //help
       printf("Commands:\n");

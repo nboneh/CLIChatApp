@@ -274,9 +274,17 @@ int hashmap_put(map_t in, char* key, any_t value){
 		index = hashmap_hash(in, key);
 	}
 
+	char * copykey = malloc(strlen(key) + 1); 
+	strcpy(copykey, key);
+	copykey[strlen(key) + 1] ='\0';
+
+
+	char * copyval = malloc(strlen(value) + 1); 
+	strcpy(copyval, value);
+	copyval[strlen(copyval) + 1] ='\0';
 	/* Set the data */
-	m->data[index].data = value;
-	m->data[index].key = key;
+	m->data[index].data = copyval;
+	m->data[index].key = copykey;
 	m->data[index].in_use = 1;
 	m->size++; 
 
@@ -322,7 +330,7 @@ int hashmap_get(map_t in, char* key, any_t *arg){
  * additional any_t argument is passed to the function as its first
  * argument and the hashmap element is the second.
  */
-int hashmap_iterate(map_t in, PFany f, any_t item) {
+int hashmap_iterate(map_t in, PFany f) {
 	int i;
 
 	/* Cast the hashmap */
@@ -333,14 +341,17 @@ int hashmap_iterate(map_t in, PFany f, any_t item) {
 		return MAP_MISSING;	
 
 	/* Linear probing */
-	for(i = 0; i< m->table_size; i++)
-		if(m->data[i].in_use != 0) {
-			any_t data = (any_t) (m->data[i].data);
-			int status = f(item, data);
+	for(i = 0; i< m->table_size; i++){
+		 int in_use = m->data[i].in_use;
+		if(in_use == 1) {
+			char * data = (any_t) (m->data[i].data);
+			char * key = (any_t) (m->data[i].key);
+			int status = f(key, data);
 			if (status != MAP_OK) {
 				return status;
 			}
 		}
+	}
 
     return MAP_OK;
 }
