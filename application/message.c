@@ -9,23 +9,15 @@
 #include <string.h>
 #include <signal.h>
 #include "hashmap.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
 
 map_t contacts;
+FILE * contactsWriteFile;
 
-int parseShow(char *ip, char *contactname){
-  printf("%s, %s\n", ip, contactname);
-  return MAP_OK;
-}
 
-void loadContacts(){
-  contacts = hashmap_new();
-}
-
-void saveContacts(){
-
-}
-
-void  parseCmd(char *cmd, char **argv)
+void  splitBySpaces(char *cmd, char **argv)
 {    
    //Spliting basd on white spaces
    //While not end of cmd
@@ -43,6 +35,57 @@ void  parseCmd(char *cmd, char **argv)
      } 
      //Adding terminating 0 to end of argument list
      *argv = '\0';                
+}
+
+
+int parseShow(char *ip, char *contactname){
+  printf("%s, %s\n", ip, contactname);
+  return MAP_OK;
+}
+
+int parseWrite(char *ip, char *contactname){
+    fputs(ip, contactsWriteFile);
+    fputs(" ", contactsWriteFile);
+    fputs(contactname, contactsWriteFile);
+    fputs("\n", contactsWriteFile);
+    return MAP_OK;
+}
+
+void loadContacts(){
+  contacts = hashmap_new();
+
+  FILE * fp;
+  char * line = NULL;
+  size_t len = 0;
+  ssize_t read;
+
+  fp = fopen("savefiles/contacts.txt", "r");
+  if (fp == NULL){
+      //Contacts file not created yet 
+      return;
+  }
+
+  while ((read = getline(&line, &len, fp)) != -1) {
+      int argv_size = 2;
+      char *argv[argv_size];
+      splitBySpaces(line, argv);
+      hashmap_put(contacts,argv[0], argv[1]);
+  }
+
+  fclose(fp);
+  if (line)
+      free(line);
+}
+
+void saveContacts(){
+  struct stat st = {0};
+  if (stat("savefiles", &st) == -1) {
+       mkdir("savefiles", 0700);
+  }
+  contactsWriteFile = fopen("savefiles/contacts.txt","w");
+  PFany parser = (PFany)&parseWrite;
+  hashmap_iterate(contacts, parser);
+  fclose(contactsWriteFile);
 }
 
 void add(char *IP, char *contactname){
@@ -103,7 +146,7 @@ int main() {
       char *argv[argv_size];
       argv[1] = NULL;
       argv[2] = NULL;
-      parseCmd(cmd, argv);
+      splitBySpaces(cmd, argv);
 
       if(argv[1] == NULL || argv[2] == NULL){
         printf("Invalid use of add command, type help for list of commands\n");
@@ -115,7 +158,7 @@ int main() {
       int argv_size = 2;
       char *argv[argv_size];
       argv[1] = NULL;
-      parseCmd(cmd, argv);
+      splitBySpaces(cmd, argv);
 
       if(argv[1] == NULL){
         printf("Invalid use of remove command, type help for list of commands\n");
