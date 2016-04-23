@@ -79,6 +79,7 @@ void listenForConn()
     struct sockaddr_in *sin = (struct sockaddr_in *)&their_addr;
      //setupMessaging(char* reference);
     sockfd = accept(oldfd, (struct sockaddr *)&their_addr, &addr_size);
+    close(oldfd); 
     unsigned char *ip = (unsigned char *)&sin->sin_addr.s_addr;
     printf("%d %d %d %d\n", ip[0], ip[1], ip[2], ip[3]);
     messageMode = 1;
