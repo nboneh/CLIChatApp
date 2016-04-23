@@ -284,6 +284,7 @@ int main() {
 
     //Exiting on 'Ctrl-D'
     if(res == NULL){
+      close(sockfd);
       printf("\n");
       printf("Goodbye\n");
       break;
@@ -347,6 +348,7 @@ int main() {
     } else if(strcmp(cmd,"quit") == 0){
       if(messageMode){
         messageMode = 0;
+        close(sockfd);
       }
       //Exiting on quit command
       else {
