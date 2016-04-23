@@ -423,9 +423,9 @@ int main() {
         messageMode = 1;
         receiveRequest = 0;
         char * acceptmsg = "a";
+        send(sockfd, acceptmsg, strlen(acceptmsg),0);
         printf("Establishing handshake... \n");
         sleep(5);
-        send(sockfd, acceptmsg, strlen(acceptmsg),0);
       } else if(strcmp(cmd, "r") ==0 ){
         receiveRequest = 0;
         char * rejectmsg = "r";
