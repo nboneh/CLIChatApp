@@ -116,8 +116,8 @@ void sendMessage(char* message){
   fputs(compmessage, messagefile);
 
   fclose(messagefile);
+  fflush(stdout);
   pthread_mutex_unlock(&lock); 
-  printMessageMode(1);
 }
 
 void *receiveMessage(){
@@ -130,6 +130,7 @@ void *receiveMessage(){
       printf("Remote hang up\n");
       printf(">>> ");
      messageMode = 0;
+      pthread_mutex_unlock(&lock); 
       return NULL;
     }
 
@@ -143,6 +144,8 @@ void *receiveMessage(){
     fputs(message, messagefile);
 
     fclose(messagefile);
+    printMessageMode(1);
+    fflush(stdout);
     pthread_mutex_unlock(&lock); 
   }
 }
