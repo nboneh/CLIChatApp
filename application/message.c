@@ -151,8 +151,8 @@ void *receiveMessage(){
 
     fclose(messagefile);
 
-    printMessageMode(1);
     printf("\n");
+    printMessageMode(1);
     fflush(stdout);
     pthread_mutex_unlock(&lock); 
   }
