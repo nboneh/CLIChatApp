@@ -65,23 +65,6 @@ void startMessaging(char* reference)
   strcpy(referencecop, reference);
   referencecop[strlen(referencecop) + 1] ='\0';
 
-  struct addrinfo hints, *res;
-  int sockfd;
-  // first, load up address structs with getaddrinfo():
-  memset(&hints, 0, sizeof hints);
-  hints.ai_family = AF_INET; 
-  hints.ai_socktype = SOCK_STREAM;
-  hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
-
-  getaddrinfo(NULL, APP_PORT, &hints, &res);
-
-  // make a socket:
-
-  sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-
-  // bind it to the port we passed in to getaddrinfo(): 
-  bind(sockfd, res->ai_addr, res->ai_addrlen);
-
   messageMode = 1;
   messagingContactName = referencecop;
 
@@ -95,6 +78,30 @@ void startMessaging(char* reference)
     messagingContactIP = referencecop;
   }
   snprintf(messageFileName, sizeof messageFileName, "savefiles/%s.txt",messagingContactIP );
+
+  struct addrinfo hints, *res;
+  int sockfd;
+  // first, load up address structs with getaddrinfo():
+  memset(&hints, 0, sizeof hints);
+  hints.ai_family = AF_INET; 
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+
+  getaddrinfo(reference, APP_PORT, &hints, &res);
+
+  // make a socket:
+
+  sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+
+  // bind it to the port we passed in to getaddrinfo(): 
+  bind(sockfd, res->ai_addr, res->ai_addrlen);
+
+  sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+
+// connect!
+
+connect(sockfd, res->ai_addr, res->ai_addrlen);
+
 }
 
 void printMessageMode(int copyPreviousPrompt){
