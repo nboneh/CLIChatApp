@@ -61,16 +61,47 @@ void sendMessage(char* message){
  
   pthread_mutex_lock(&lock); 
   //Critical section do not want to edit file at the same time as listener receives message
+  if(send(sockfd, compmessage, 1024, 0) < 0){
+    //Error occured exiting
+    printf("Remote hang up\n");
+    pthread_mutex_unlock(&lock); 
+    messageMode = 0;
+  }
+
   FILE * messagefile = fopen(messageFileName, "a");
-  //indicating message from self
   if(!fileEmpty(messagefile)){
     fputs("\n", messagefile);
   }
+  //indicating message from self
   fputs("*", messagefile);
   fputs(compmessage, messagefile);
 
   fclose(messagefile);
   pthread_mutex_unlock(&lock); 
+}
+
+void *receiveMessage(){
+  while(1){
+    char message[1024];
+    int ret =recv(sockfd, message,1024, 0);
+    if(ret ==0){
+      //Remote hang up exiting
+     messageMode = 0;
+      return NULL;
+    }
+
+   pthread_mutex_lock(&lock); 
+  //Critical section do not want to edit file at the same time as sender sends message
+  FILE * messagefile = fopen(messageFileName, "a");
+  if(!fileEmpty(messagefile)){
+    fputs("\n", messagefile);
+   }
+    //indicating message from self
+    fputs(message, messagefile);
+
+    fclose(messagefile);
+    pthread_mutex_unlock(&lock); 
+  }
 }
 
 void setupMessaging(char* reference){
@@ -184,6 +215,9 @@ if(ret == 0 || buf[0] == 'r'){
   printf("Connection rejected\n");
   close(sockfd);
 } else if(buf[0] == 'a'){
+
+  pthread_t recthread;
+    pthread_create(&recthread, NULL, receiveMessage, NULL);     
   messageMode = 1;
 
 } else {
@@ -368,6 +402,8 @@ int main() {
 
     if(receiveRequest){
       if(strcmp(cmd, "a") ==0 ){
+        pthread_t recthread;
+        pthread_create(&recthread, NULL, receiveMessage, NULL);     
         messageMode = 1;
         receiveRequest = 0;
         char * acceptmsg = "a";
