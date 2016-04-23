@@ -48,7 +48,7 @@ int fileEmpty(FILE * file){
 
 }
 
-void printMessageMode(int copyPreviousPrompt){
+void printMessageMode(){
    //Getting number of lines in the terminal to set up a nice window
   struct winsize w;
   ioctl(0, TIOCGWINSZ, &w);
@@ -77,10 +77,8 @@ void printMessageMode(int copyPreviousPrompt){
   for(i = 0; i < (lines); i++){
       printf("\n");
   }
-  if(copyPreviousPrompt)
-      printf("Messaging %s, type quit to stop: %s",messagingContactName, cmd);
-  else 
-      printf("Messaging %s, type quit to stop: ",messagingContactName);
+
+  printf("Messaging %s, type quit to stop: ",messagingContactName);
 
   if(fp != NULL)
     fclose(fp);
@@ -152,7 +150,7 @@ void *receiveMessage(){
     fclose(messagefile);
 
     printf("\n");
-    printMessageMode(1);
+    printMessageMode();
     fflush(stdout);
     pthread_mutex_unlock(&lock); 
   }
@@ -397,7 +395,7 @@ int main() {
     char * res;
     //Prompting user for input
     if(messageMode){
-      printMessageMode(0);
+      printMessageMode();
     } else if(receiveRequest){
          printf("%s would like to start messaging, type a to accept and r to reject ", messagingContactName);
     }
