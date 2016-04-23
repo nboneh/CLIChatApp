@@ -24,8 +24,10 @@ map_t backwardscontacts;
 FILE * contactsWriteFile;
 
 int messageMode = 0;
+int receiveRequest =0 ;
 char * messagingContactName;
 char * messagingContactIP;
+
 char messageFileName[80];
 char cmd[BUFSIZ];
 int sockfd;
@@ -46,7 +48,7 @@ void setupMessaging(char* reference){
     //User entered an ip using that ip
     messagingContactIP = referencecop;
   }
-  snprintf(messageFileName, sizeof messageFileName, "savefiles/%s.txt",messagingContactIP );
+  snprintf(messageFileName,sizeof messageFileName,"savefiles/%s.txt",messagingContactIP );
 
 }
 
@@ -57,7 +59,6 @@ void listenForConn()
     struct addrinfo hints, *res;
     int  oldfd;
 
-    // !! don't forget your error checking for these calls !!
 
     // first, load up address structs with getaddrinfo():
 
@@ -94,7 +95,7 @@ void listenForConn()
       reference = ip;
     }
     setupMessaging(reference);
-    messageMode = 1;
+      receiveRequest = 1;
 }
 
 void startMessaging(char* reference)
@@ -273,6 +274,8 @@ int main() {
     //Prompting user for input
     if(messageMode){
       printMessageMode(0);
+    } else if(receiveRequest){
+         printf("%s would like to start messaging, type a to accept and r to reject ", messagingContactName);
     }
     else 
        printf(">>> ");                                                                                                                                                                
@@ -289,7 +292,16 @@ int main() {
       printf("Goodbye\n");
       break;
     }
-    if(strlen(cmd) >= 7 && cmd[0] == 'm' && cmd[1] == 'e' && cmd[2] == 's' && cmd[3] == 's' && cmd[4] == 'a' && cmd[5] == 'g' && cmd[6] == 'e'){
+
+    if(receiveRequest){
+      if(strcmp(cmd, "a") ==0 ){
+        messageMode = 1;
+        receiveRequest = 0;
+      } else if(strcmp(cmd, "r") ==0 ){
+        receiveRequest = 0;
+        close(sockfd);
+      }
+    } else if(strlen(cmd) >= 7 && cmd[0] == 'm' && cmd[1] == 'e' && cmd[2] == 's' && cmd[3] == 's' && cmd[4] == 'a' && cmd[5] == 'g' && cmd[6] == 'e'){
       //Message contact 
        //add contact
       int argv_size = 2;
