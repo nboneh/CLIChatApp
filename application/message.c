@@ -13,6 +13,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <pthread.h>
 
 #define APP_PORT "3490" 
 
@@ -28,9 +29,9 @@ char * messagingContactIP;
 
 char messageFileName[80];
 char cmd[BUFSIZ];
-int sockfd;
-int listenalready =0;
-int listenfd = 0;
+int sockfd =-1;
+int listenfd = -1;
+int closeThreads = 0;
 
 void setupMessaging(char* reference){
   char * referencecop = malloc(strlen(reference) + 1); 
@@ -52,36 +53,46 @@ void setupMessaging(char* reference){
 
 }
 
-void listenForConn()
+void *listenForConn()
 {
-   struct sockaddr_storage their_addr;
+  //Runs on seperate thread waiting for connection calls
+     struct sockaddr_storage their_addr;
     socklen_t addr_size;
     struct addrinfo hints, *res;
+  while(1 ){
+        //Runs on seperate thread listening for connection
 
-    // first, load up address structs with getaddrinfo():
+       // first, load up address structs with getaddrinfo():
 
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_INET;  
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+       memset(&hints, 0, sizeof hints);
+        hints.ai_family = AF_INET;  
+        hints.ai_socktype = SOCK_STREAM;
+       hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
 
-    getaddrinfo(NULL, APP_PORT, &hints, &res);
+      getaddrinfo(NULL, APP_PORT, &hints, &res);
 
-    // make a socket, bind it, and listen on it:
-
-      if(!listenalready){
-        listenfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    if(listenfd < 0){
+       // make a socket, bind it, and listen on it:
+      listenfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
       bind(listenfd, res->ai_addr, res->ai_addrlen);
-          listen(listenfd, 1);
 
-      listenalready = 1;
+      listen(listenfd, 2);
     }
     // now accept an incoming connection:
 
     addr_size = sizeof their_addr;
     struct sockaddr_in *sin = (struct sockaddr_in *)&their_addr;
-    sockfd = accept(listenfd, (struct sockaddr *)&their_addr, &addr_size);
-
+    int newSock = accept(listenfd, (struct sockaddr *)&their_addr, &addr_size);
+       printf("%d\n", newSock);
+    if(closeThreads ){
+      return NULL;
+    }
+    if(messageMode || receiveRequest){
+      //Do not disturb user while he is messaging
+      close(newSock);
+      continue; 
+    }
+    sockfd = newSock;
     unsigned char *brokeIp = (unsigned char *)&sin->sin_addr.s_addr;
     char ip[80];
     snprintf(ip, sizeof ip, "%d.%d.%d.%d", brokeIp[0], brokeIp[1], brokeIp[2], brokeIp[3]);  
@@ -96,6 +107,9 @@ void listenForConn()
     }
     setupMessaging(reference);
       receiveRequest = 1;
+       printf("\n%s would like to start messaging, type a to accept and r to reject \n", messagingContactName); 
+
+  }
 }
 
 void startMessaging(char* reference)
@@ -278,7 +292,11 @@ int main() {
   char username[BUFSIZ];
   getlogin_r(username, BUFSIZ);
 
-  printf("Welcome %s to CLI Messaging\n", username);            
+  printf("Welcome %s to CLI Messaging\n", username);      
+
+    //Creating listening connection thread
+    pthread_t thread;
+    pthread_create(&thread, NULL, listenForConn, NULL);      
 
   while(1){
     char * res;
@@ -289,7 +307,7 @@ int main() {
          printf("%s would like to start messaging, type a to accept and r to reject ", messagingContactName);
     }
     else 
-       printf(">>> ");                                                                                                                                                                
+       printf(">>> ");                                                                                                                                                            
     res = fgets (cmd, BUFSIZ, stdin);
 
     //Removing new line from user input
@@ -298,7 +316,6 @@ int main() {
 
     //Exiting on 'Ctrl-D'
     if(res == NULL){
-      close(sockfd);
       printf("\n");
       printf("Goodbye\n");
       break;
@@ -382,9 +399,7 @@ int main() {
         printf("Goodbye\n");
         break;
       }
-    } else if(strcmp(cmd, "listen") ==0 ){
-      listenForConn();  
-    } else{
+    }else{
       if(messageMode){
 
       }
@@ -395,7 +410,16 @@ int main() {
 
   saveContacts();
   hashmap_free(contacts);
-    hashmap_free(backwardscontacts);
+  closeThreads = 1;
+  if(sockfd >= 0){
+    shutdown(sockfd,2);
+    close(sockfd);
+  }
+  if(listenfd >= 0){
+    shutdown(listenfd,2);
+    close(listenfd);
+  }
+
 
   return 0; 
 }
