@@ -126,7 +126,9 @@ void *receiveMessage(){
     int ret =recv(sockfd, message,1024, 0);
     if(ret ==0){
       //Remote hang up exiting
+      printf("\n");
       printf("Remote hang up\n");
+      printf(">>> ");
      messageMode = 0;
       return NULL;
     }
