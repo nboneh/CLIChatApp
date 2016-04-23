@@ -1,5 +1,3 @@
-/* message.c -- Nir Boneh messaging application
- */
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -31,7 +29,8 @@ char * messagingContactIP;
 char messageFileName[80];
 char cmd[BUFSIZ];
 int sockfd;
-int listenSocketSetupBefore = 0;
+int listenalready =0;
+int listenfd = 0;
 
 void setupMessaging(char* reference){
   char * referencecop = malloc(strlen(reference) + 1); 
@@ -58,8 +57,6 @@ void listenForConn()
    struct sockaddr_storage their_addr;
     socklen_t addr_size;
     struct addrinfo hints, *res;
-    int  oldfd = 0;
-
 
     // first, load up address structs with getaddrinfo():
 
@@ -72,19 +69,19 @@ void listenForConn()
 
     // make a socket, bind it, and listen on it:
 
-    oldfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    if(!listenSocketSetupBefore){
-      bind(oldfd, res->ai_addr, res->ai_addrlen);
-      listen(oldfd, 1);
-      listenSocketSetupBefore =0 ;
-    }
+      if(!listenalready){
+        listenfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+      bind(listenfd, res->ai_addr, res->ai_addrlen);
+          listen(listenfd, 1);
 
+      listenalready = 1;
+    }
     // now accept an incoming connection:
 
     addr_size = sizeof their_addr;
     struct sockaddr_in *sin = (struct sockaddr_in *)&their_addr;
-     //setupMessaging(char* reference);
-    sockfd = accept(oldfd, (struct sockaddr *)&their_addr, &addr_size);
+    sockfd = accept(listenfd, (struct sockaddr *)&their_addr, &addr_size);
+
     unsigned char *brokeIp = (unsigned char *)&sin->sin_addr.s_addr;
     char ip[80];
     snprintf(ip, sizeof ip, "%d.%d.%d.%d", brokeIp[0], brokeIp[1], brokeIp[2], brokeIp[3]);  
@@ -126,14 +123,12 @@ char buf[80];
 int ret =recv(sockfd, buf,80, 0);
 if(ret == 0 || buf[0] == 'r'){
   printf("Connection rejected\n");
-  shutdown(sockfd, 2);
   close(sockfd);
 } else if(buf[0] == 'a'){
   messageMode = 1;
 
 } else {
   printf("Something went wrong\n");
-    shutdown(sockfd, 2);
   close(sockfd);
 }
 }
@@ -319,7 +314,6 @@ int main() {
         receiveRequest = 0;
         char * rejectmsg = "r";
         send(sockfd, rejectmsg, strlen(rejectmsg),0);
-        shutdown(sockfd,2);
         close(sockfd);
       }
     } else if(strlen(cmd) >= 7 && cmd[0] == 'm' && cmd[1] == 'e' && cmd[2] == 's' && cmd[3] == 's' && cmd[4] == 'a' && cmd[5] == 'g' && cmd[6] == 'e'){
@@ -381,7 +375,6 @@ int main() {
     } else if(strcmp(cmd,"quit") == 0){
       if(messageMode){
         messageMode = 0;
-        shutdown(sockfd,2);
         close(sockfd);
       }
       //Exiting on quit command
