@@ -72,8 +72,10 @@ void *listenForConn()
       getaddrinfo(NULL, APP_PORT, &hints, &res);
 
     if(listenfd < 0){
+      int reuse_addr = 1;
        // make a socket, bind it, and listen on it:
       listenfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+      setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &reuse_addr, sizeof(int));
       bind(listenfd, res->ai_addr, res->ai_addrlen);
 
       listen(listenfd, 2);
@@ -83,7 +85,6 @@ void *listenForConn()
     addr_size = sizeof their_addr;
     struct sockaddr_in *sin = (struct sockaddr_in *)&their_addr;
     int newSock = accept(listenfd, (struct sockaddr *)&their_addr, &addr_size);
-       printf("%d\n", newSock);
     if(closeThreads ){
       return NULL;
     }
@@ -107,7 +108,8 @@ void *listenForConn()
     }
     setupMessaging(reference);
       receiveRequest = 1;
-       printf("\n%s would like to start messaging, type a to accept and r to reject \n", messagingContactName); 
+       printf("\n%s would like to start messaging, type a to accept and r to reject\n", messagingContactName); 
+       fflush(stdout);
 
   }
 }
