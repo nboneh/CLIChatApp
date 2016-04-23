@@ -121,8 +121,21 @@ void startMessaging(char* reference)
 // connect!
 
 connect(sockfd, res->ai_addr, res->ai_addrlen);
+printf("Connection made waiting for other user to accept or reject\n");
+char buf[80];
+int ret =recv(sockfd, buf,80, 0);
+if(ret == 0 || buf[0] == 'r'){
+  printf("Connection rejected\n");
+  shutdown(sockfd, 2);
+  close(sockfd);
+} else if(buf[0] == 'a'){
   messageMode = 1;
 
+} else {
+  printf("Something went wrong\n");
+    shutdown(sockfd, 2);
+  close(sockfd);
+}
 }
 
 void printMessageMode(int copyPreviousPrompt){
