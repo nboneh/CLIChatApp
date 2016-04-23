@@ -36,6 +36,7 @@ int closeThreads = 0;
 
 pthread_mutex_t lock=PTHREAD_MUTEX_INITIALIZER;
 
+
 int fileEmpty(FILE * file){
    fseek(file, 0, SEEK_END);
 
@@ -45,6 +46,44 @@ int fileEmpty(FILE * file){
 
     return 0;
 
+}
+
+void printMessageMode(int copyPreviousPrompt){
+   //Getting number of lines in the terminal to set up a nice window
+  struct winsize w;
+  ioctl(0, TIOCGWINSZ, &w);
+  int lines = w.ws_row;
+  int i;
+  FILE * fp;
+  fp = fopen(messageFileName, "r");
+  //Writing to screen from messaging file to show converstation
+  if(fp != NULL){
+    //Read from message file
+   char * line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    while ((read = getline(&line, &len, fp)) != -1) {
+      if(line[0] == '*'){
+        //A * indicate my message
+        line[0] = ' ';
+        printf("Me%s",line);
+      }
+      else
+        printf("%s: %s", messagingContactName, line);
+      lines--;
+    }
+  }
+
+  for(i = 0; i < (lines); i++){
+      printf("\n");
+  }
+  if(copyPreviousPrompt)
+      printf("Messaging %s, type quit to stop: %s",messagingContactName, cmd);
+  else 
+      printf("Messaging %s, type quit to stop: ",messagingContactName);
+
+  if(fp != NULL)
+    fclose(fp);
 }
 
 void sendMessage(char* message){
@@ -78,6 +117,7 @@ void sendMessage(char* message){
 
   fclose(messagefile);
   pthread_mutex_unlock(&lock); 
+  printMessageMode(1);
 }
 
 void *receiveMessage(){
@@ -86,6 +126,7 @@ void *receiveMessage(){
     int ret =recv(sockfd, message,1024, 0);
     if(ret ==0){
       //Remote hang up exiting
+      printf("Remote hang up\n");
      messageMode = 0;
       return NULL;
     }
@@ -224,44 +265,6 @@ if(ret == 0 || buf[0] == 'r'){
   printf("Something went wrong\n");
   close(sockfd);
 }
-}
-
-void printMessageMode(int copyPreviousPrompt){
-   //Getting number of lines in the terminal to set up a nice window
-  struct winsize w;
-  ioctl(0, TIOCGWINSZ, &w);
-  int lines = w.ws_row;
-  int i;
-  FILE * fp;
-  fp = fopen(messageFileName, "r");
-  //Writing to screen from messaging file to show converstation
-  if(fp != NULL){
-    //Read from message file
-   char * line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    while ((read = getline(&line, &len, fp)) != -1) {
-      if(line[0] == '*'){
-        //A * indicate my message
-        line[0] = ' ';
-        printf("Me%s",line);
-      }
-      else
-        printf("%s: %s", messagingContactName, line);
-      lines--;
-    }
-  }
-
-  for(i = 0; i < (lines); i++){
-      printf("\n");
-  }
-  if(copyPreviousPrompt)
-      printf("Messaging %s, type quit to stop: %s",messagingContactName, cmd);
-  else 
-      printf("Messaging %s, type quit to stop: ",messagingContactName);
-
-  if(fp != NULL)
-    fclose(fp);
 }
 
 void  splitBySpaces(char *cmd, char **argv)
