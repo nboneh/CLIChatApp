@@ -271,6 +271,8 @@ if(ret == 0 || buf[0] == 'r'){
   pthread_t recthread;
     pthread_create(&recthread, NULL, receiveMessage, NULL);     
   messageMode = 1;
+   printf("Establishing handshake... \n");
+    sleep(5);
 
 } else {
   printf("Something went wrong\n");
@@ -421,6 +423,8 @@ int main() {
         messageMode = 1;
         receiveRequest = 0;
         char * acceptmsg = "a";
+        printf("Establishing handshake... \n");
+        sleep(5);
         send(sockfd, acceptmsg, strlen(acceptmsg),0);
       } else if(strcmp(cmd, "r") ==0 ){
         receiveRequest = 0;
