@@ -31,6 +31,7 @@ char * messagingContactIP;
 char messageFileName[80];
 char cmd[BUFSIZ];
 int sockfd;
+int listenSocketSetupBefore = 0;
 
 void setupMessaging(char* reference){
   char * referencecop = malloc(strlen(reference) + 1); 
@@ -57,7 +58,7 @@ void listenForConn()
    struct sockaddr_storage their_addr;
     socklen_t addr_size;
     struct addrinfo hints, *res;
-    int  oldfd;
+    int  oldfd = 0;
 
 
     // first, load up address structs with getaddrinfo():
@@ -72,8 +73,11 @@ void listenForConn()
     // make a socket, bind it, and listen on it:
 
     oldfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    bind(oldfd, res->ai_addr, res->ai_addrlen);
-    listen(oldfd, 1);
+    if(!listenSocketSetupBefore){
+      bind(oldfd, res->ai_addr, res->ai_addrlen);
+      listen(oldfd, 1);
+      listenSocketSetupBefore =0 ;
+    }
 
     // now accept an incoming connection:
 
@@ -81,7 +85,6 @@ void listenForConn()
     struct sockaddr_in *sin = (struct sockaddr_in *)&their_addr;
      //setupMessaging(char* reference);
     sockfd = accept(oldfd, (struct sockaddr *)&their_addr, &addr_size);
-    close(oldfd); 
     unsigned char *brokeIp = (unsigned char *)&sin->sin_addr.s_addr;
     char ip[80];
     snprintf(ip, sizeof ip, "%d.%d.%d.%d", brokeIp[0], brokeIp[1], brokeIp[2], brokeIp[3]);  
@@ -303,6 +306,7 @@ int main() {
         receiveRequest = 0;
         char * rejectmsg = "r";
         send(sockfd, rejectmsg, strlen(rejectmsg),0);
+        shutdown(sockfd,2);
         close(sockfd);
       }
     } else if(strlen(cmd) >= 7 && cmd[0] == 'm' && cmd[1] == 'e' && cmd[2] == 's' && cmd[3] == 's' && cmd[4] == 'a' && cmd[5] == 'g' && cmd[6] == 'e'){
@@ -364,6 +368,7 @@ int main() {
     } else if(strcmp(cmd,"quit") == 0){
       if(messageMode){
         messageMode = 0;
+        shutdown(sockfd,2);
         close(sockfd);
       }
       //Exiting on quit command
