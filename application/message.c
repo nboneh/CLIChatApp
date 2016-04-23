@@ -27,13 +27,34 @@ char * messagingContactName;
 char * messagingContactIP;
 char messageFileName[80];
 char cmd[BUFSIZ];
+int sockfd;
+
+void setupMessaging(char* reference){
+  char * referencecop = malloc(strlen(reference) + 1); 
+  strcpy(referencecop, reference);
+  referencecop[strlen(referencecop) + 1] ='\0';
+
+  messagingContactName = referencecop;
+
+  char  *value;
+  int error = hashmap_get(contacts, referencecop, (void**)(&value));
+  if(error==MAP_OK){
+    //User enter a contact using that contact's ip
+    messagingContactIP = value;
+  } else {
+    //User entered an ip using that ip
+    messagingContactIP = referencecop;
+  }
+  snprintf(messageFileName, sizeof messageFileName, "savefiles/%s.txt",messagingContactIP );
+
+}
 
 void listenForConn()
 {
    struct sockaddr_storage their_addr;
     socklen_t addr_size;
     struct addrinfo hints, *res;
-    int sockfd, new_fd;
+    int  oldfd;
 
     // !! don't forget your error checking for these calls !!
 
@@ -48,39 +69,25 @@ void listenForConn()
 
     // make a socket, bind it, and listen on it:
 
-    sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-    bind(sockfd, res->ai_addr, res->ai_addrlen);
-    listen(sockfd, BACKLOG);
+    oldfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    bind(oldfd, res->ai_addr, res->ai_addrlen);
+    listen(oldfd, BACKLOG);
 
     // now accept an incoming connection:
 
     addr_size = sizeof their_addr;
-    new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
+    struct sockaddr_in *sin = (struct sockaddr_in *)&their_addr;
+    unsigned char *ip = (unsigned char *)&sin->sin_addr.s_addr;
+    printf("%d %d %d %d\n", ip[0], ip[1], ip[2], ip[3]);
+     //setupMessaging(char* reference);
+    sockfd = accept(oldfd, (struct sockaddr *)&their_addr, &addr_size);
+    messageMode = 1;
 }
 
-void startMessaging(char* reference)
+void startMessaging(char* referenc)
 {
 
-  char * referencecop = malloc(strlen(reference) + 1); 
-  strcpy(referencecop, reference);
-  referencecop[strlen(referencecop) + 1] ='\0';
-
-  messageMode = 1;
-  messagingContactName = referencecop;
-
-  char  *value;
-  int error = hashmap_get(contacts, referencecop, (void**)(&value));
-  if(error==MAP_OK){
-    //User enter a contact using that contact's ip
-    messagingContactIP = value;
-  } else {
-    //User entered an ip using that ip
-    messagingContactIP = referencecop;
-  }
-  snprintf(messageFileName, sizeof messageFileName, "savefiles/%s.txt",messagingContactIP );
-
   struct addrinfo hints, *res;
-  int sockfd;
   // first, load up address structs with getaddrinfo():
   memset(&hints, 0, sizeof hints);
   hints.ai_family = AF_INET; 
@@ -101,6 +108,7 @@ void startMessaging(char* reference)
 // connect!
 
 connect(sockfd, res->ai_addr, res->ai_addrlen);
+  messageMode = 1;
 
 }
 
