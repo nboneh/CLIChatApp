@@ -1,7 +1,5 @@
 /* message.c -- Nir Boneh messaging application
  */
-
-
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -12,10 +10,130 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+
+#define APP_PORT "3490" 
+#define BACKLOG 10 
 
 map_t contacts;
 FILE * contactsWriteFile;
 
+int messageMode = 0;
+char * messagingContactName;
+char * messagingContactIP;
+char messageFileName[80];
+char cmd[BUFSIZ];
+
+void listenForConn()
+{
+   struct sockaddr_storage their_addr;
+    socklen_t addr_size;
+    struct addrinfo hints, *res;
+    int sockfd, new_fd;
+
+    // !! don't forget your error checking for these calls !!
+
+    // first, load up address structs with getaddrinfo():
+
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_INET;  
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+
+    getaddrinfo(NULL, APP_PORT, &hints, &res);
+
+    // make a socket, bind it, and listen on it:
+
+    sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    bind(sockfd, res->ai_addr, res->ai_addrlen);
+    listen(sockfd, BACKLOG);
+
+    // now accept an incoming connection:
+
+    addr_size = sizeof their_addr;
+    new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
+}
+
+void startMessaging(char* reference)
+{
+
+  char * referencecop = malloc(strlen(reference) + 1); 
+  strcpy(referencecop, reference);
+  referencecop[strlen(referencecop) + 1] ='\0';
+
+  struct addrinfo hints, *res;
+  int sockfd;
+  // first, load up address structs with getaddrinfo():
+  memset(&hints, 0, sizeof hints);
+  hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+
+  getaddrinfo(NULL, APP_PORT, &hints, &res);
+
+  // make a socket:
+
+  sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+
+  // bind it to the port we passed in to getaddrinfo(): 
+  bind(sockfd, res->ai_addr, res->ai_addrlen);
+
+  messageMode = 1;
+  messagingContactName = referencecop;
+
+  char  *value;
+  int error = hashmap_get(contacts, referencecop, (void**)(&value));
+  if(error==MAP_OK){
+    //User enter a contact using that contact's ip
+    messagingContactIP = value;
+  } else {
+    //User entered an ip using that ip
+    messagingContactIP = referencecop;
+  }
+  snprintf(messageFileName, sizeof messageFileName, "savefiles/%s.txt",messagingContactIP );
+}
+
+void printMessageMode(int copyPreviousPrompt){
+   //Getting number of lines in the terminal to set up a nice window
+  struct winsize w;
+  ioctl(0, TIOCGWINSZ, &w);
+  int lines = w.ws_row;
+  int i;
+  FILE * fp;
+  fp = fopen(messageFileName, "r");
+  //Writing to screen from messaging file to show converstation
+  if(fp != NULL){
+    //Read from message file
+   char * line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    while ((read = getline(&line, &len, fp)) != -1) {
+      if(line[0] == '*'){
+        //A * indicate my message
+        line[0] = ' ';
+        printf("Me:%s",line);
+      }
+      else
+        printf("%s: %s", messagingContactName, line);
+      lines--;
+    }
+  }
+
+  for(i = 0; i < (lines); i++){
+      printf("\n");
+  }
+  if(copyPreviousPrompt)
+      printf("Messaging %s, type quit to stop: %s",messagingContactName, cmd);
+  else 
+      printf("Messaging %s, type quit to stop: ",messagingContactName);
+
+  if(fp != NULL)
+    fclose(fp);
+}
 
 void  splitBySpaces(char *cmd, char **argv)
 {    
@@ -78,10 +196,6 @@ void loadContacts(){
 }
 
 void saveContacts(){
-  struct stat st = {0};
-  if (stat("savefiles", &st) == -1) {
-       mkdir("savefiles", 0700);
-  }
   contactsWriteFile = fopen("savefiles/contacts.txt","w");
   PFany parser = (PFany)&parseWrite;
   hashmap_iterate(contacts, parser);
@@ -112,22 +226,29 @@ void removec(char *contactname){
 
 
 int main() {
-
+  //Creating save files folder if does not exist
+   struct stat st = {0};
+  if (stat("savefiles", &st) == -1) {
+       mkdir("savefiles", 0700);
+  }
   //Loading contacts
   loadContacts();
 
-  char cmd[BUFSIZ];
 
   //Getting username for prompt   
   char username[BUFSIZ];
   getlogin_r(username, BUFSIZ);
 
-  printf("Welcome %s to CLI Messaging\n", username);              
+  printf("Welcome %s to CLI Messaging\n", username);            
 
   while(1){
     char * res;
     //Prompting user for input
-    printf(">>> ");                                                                                                                                                                
+    if(messageMode){
+      printMessageMode(0);
+    }
+    else 
+       printf(">>> ");                                                                                                                                                                
     res = fgets (cmd, BUFSIZ, stdin);
 
     //Removing new line from user input
@@ -140,7 +261,20 @@ int main() {
       printf("Goodbye\n");
       break;
     }
-    if(strlen(cmd) >= 3 && cmd[0] == 'a' && cmd[1] == 'd' && cmd[2] == 'd'){
+    if(strlen(cmd) >= 7 && cmd[0] == 'm' && cmd[1] == 'e' && cmd[2] == 's' && cmd[3] == 's' && cmd[4] == 'a' && cmd[5] == 'g' && cmd[6] == 'e'){
+      //Message contact 
+       //add contact
+      int argv_size = 2;
+      char *argv[argv_size];
+      argv[1] = NULL;
+      splitBySpaces(cmd, argv);
+
+      if(argv[1] == NULL){
+        printf("Invalid use of message command, type help for list of commands\n");
+        continue;
+      }
+      startMessaging(argv[1]);
+    } else if(strlen(cmd) >= 3 && cmd[0] == 'a' && cmd[1] == 'd' && cmd[2] == 'd'){
       //add contact
       int argv_size = 3;
       char *argv[argv_size];
@@ -171,20 +305,35 @@ int main() {
       printf("Contact, IP Address\n");
       PFany parser = (PFany)&parseShow;
       hashmap_iterate(contacts, parser);
+    } else if(strcmp(cmd, "IP") == 0){
+      system("bash myip.sh");
     } else if(strcmp(cmd, "help") == 0){
       //help
       printf("Commands:\n");
-      printf("message (IP/contactname) - start messaging with the specific IP or contanct\n");
+      printf("message (IP/contactname) - start messaging with the specific IP address or contacts\n");
       printf("add (IP) (contactname) - this will add a new contact based on IP address\n");
       printf("remove (contactname) - allows you remove a contanct\n");
-      printf("contacts - shows all your contacts");
+      printf("contacts - shows all your contacts\n");
+      printf("IP - shows you your IP addresses\n");
+
       printf("quit or Ctrl-D - in order to exit the application\n");
     } else if(strcmp(cmd,"quit") == 0){
+      if(messageMode){
+        messageMode = 0;
+      }
       //Exiting on quit command
-      printf("Goodbye\n");
-      break;
+      else {
+        printf("Goodbye\n");
+        break;
+      }
+    } else if(strcmp(cmd, "listen")){
+      listenForConn();  
     } else{
-      printf("Invalid command, type help for list of commands\n");
+      if(messageMode){
+
+      }
+      else 
+        printf("Invalid command, type help for list of commands\n");
     }
   } 
 

@@ -3,3 +3,4 @@ message: message.c
 
 clean:
 	rm message
+	rm -rf savefiles
