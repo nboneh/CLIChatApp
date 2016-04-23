@@ -14,6 +14,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include <time.h>
 
 #define APP_PORT "3490" 
 
@@ -32,6 +33,21 @@ char cmd[BUFSIZ];
 int sockfd =-1;
 int listenfd = -1;
 int closeThreads = 0;
+
+void sendMessage(char* message){
+  time_t rawtime;
+  char * timestr;
+  rawtime = time(NULL);
+
+
+  timestr = ctime ( &rawtime );
+  timestr[strlen(timestr) -1] = '\0';
+
+  char compmessage[1024];
+  snprintf(compmessage, 1024, "[ %s ]: %s", timestr, message);
+  printf("%s",compmessage );
+
+}
 
 void setupMessaging(char* reference){
   char * referencecop = malloc(strlen(reference) + 1); 
@@ -207,7 +223,7 @@ void  splitBySpaces(char *cmd, char **argv)
           }
      } 
      //Adding terminating 0 to end of argument list
-     *argv = '\0';                
+     *argv = NULL;                
 }
 
 
@@ -406,7 +422,7 @@ int main() {
       }
     }else{
       if(messageMode){
-
+        sendMessage(cmd);
       }
       else 
         printf("Invalid command, type help for list of commands\n");
