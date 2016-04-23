@@ -87,7 +87,7 @@ void startMessaging(char* reference)
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
 
-  getaddrinfo(reference, APP_PORT, &hints, &res);
+  getaddrinfo(messagingContactIP, APP_PORT, &hints, &res);
 
   // make a socket:
 
