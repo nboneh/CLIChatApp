@@ -108,7 +108,7 @@ void startMessaging(char* reference)
 // connect!
 
 connect(sockfd, res->ai_addr, res->ai_addrlen);
- setupMessaging(reference)
+ setupMessaging(reference);
   messageMode = 1;
 
 }
