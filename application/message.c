@@ -129,8 +129,14 @@ void *receiveMessage(){
       printf("\n");
       printf("Remote hang up\n");
       printf(">>> ");
+      fflush(stdout);
      messageMode = 0;
       pthread_mutex_unlock(&lock); 
+      return NULL;
+    }
+
+    if(messageMode == 0){
+      //Exiting when message mode is done
       return NULL;
     }
 
@@ -144,7 +150,9 @@ void *receiveMessage(){
     fputs(message, messagefile);
 
     fclose(messagefile);
+
     printMessageMode(1);
+    printf("\n");
     fflush(stdout);
     pthread_mutex_unlock(&lock); 
   }
