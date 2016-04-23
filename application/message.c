@@ -297,8 +297,12 @@ int main() {
       if(strcmp(cmd, "a") ==0 ){
         messageMode = 1;
         receiveRequest = 0;
+        char * acceptmsg = "a";
+        send(sockfd, acceptmsg, strlen(acceptmsg),0);
       } else if(strcmp(cmd, "r") ==0 ){
         receiveRequest = 0;
+        char * rejectmsg = "r";
+        send(sockfd, rejectmsg, strlen(rejectmsg),0);
         close(sockfd);
       }
     } else if(strlen(cmd) >= 7 && cmd[0] == 'm' && cmd[1] == 'e' && cmd[2] == 's' && cmd[3] == 's' && cmd[4] == 'a' && cmd[5] == 'g' && cmd[6] == 'e'){
