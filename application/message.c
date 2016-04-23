@@ -81,8 +81,9 @@ void listenForConn()
      //setupMessaging(char* reference);
     sockfd = accept(oldfd, (struct sockaddr *)&their_addr, &addr_size);
     close(oldfd); 
-    unsigned char *ip = (unsigned char *)&sin->sin_addr.s_addr;
-    snprintf(ip, sizeof ip, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);  
+    unsigned char *brokeIp = (unsigned char *)&sin->sin_addr.s_addr;
+    char ip[80];
+    snprintf(ip, sizeof ip, "%d.%d.%d.%d", brokeIp[0], brokeIp[1], brokeIp[2], brokeIp[3]);  
 
   char  *reference;
    int error = hashmap_get(backwardscontacts, ip, (void**)(&reference));
