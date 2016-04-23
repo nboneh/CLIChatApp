@@ -34,6 +34,19 @@ int sockfd =-1;
 int listenfd = -1;
 int closeThreads = 0;
 
+pthread_mutex_t lock=PTHREAD_MUTEX_INITIALIZER;
+
+int fileEmpty(FILE * file){
+   fseek(file, 0, SEEK_END);
+
+    if (ftell(file) == 0){
+        return 1;
+    }
+
+    return 0;
+
+}
+
 void sendMessage(char* message){
   time_t rawtime;
   char * timestr;
@@ -44,9 +57,20 @@ void sendMessage(char* message){
   timestr[strlen(timestr) -1] = '\0';
 
   char compmessage[1024];
-  snprintf(compmessage, 1024, "[ %s ]: %s", timestr, message);
-  printf("%s",compmessage );
+  snprintf(compmessage, 1024, "[%s]: %s", timestr, message);
+ 
+  pthread_mutex_lock(&lock); 
+  //Critical section do not want to edit file at the same time as listener receives message
+  FILE * messagefile = fopen(messageFileName, "a");
+  //indicating message from self
+  if(!fileEmpty(messagefile)){
+    fputs("\n", messagefile);
+  }
+  fputs("*", messagefile);
+  fputs(compmessage, messagefile);
 
+  fclose(messagefile);
+  pthread_mutex_unlock(&lock); 
 }
 
 void setupMessaging(char* reference){
@@ -186,7 +210,7 @@ void printMessageMode(int copyPreviousPrompt){
       if(line[0] == '*'){
         //A * indicate my message
         line[0] = ' ';
-        printf("Me:%s",line);
+        printf("Me%s",line);
       }
       else
         printf("%s: %s", messagingContactName, line);
