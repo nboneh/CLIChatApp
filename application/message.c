@@ -77,14 +77,14 @@ void listenForConn()
 
     addr_size = sizeof their_addr;
     struct sockaddr_in *sin = (struct sockaddr_in *)&their_addr;
-    unsigned char *ip = (unsigned char *)&sin->sin_addr.s_addr;
-    printf("%d %d %d %d\n", ip[0], ip[1], ip[2], ip[3]);
      //setupMessaging(char* reference);
     sockfd = accept(oldfd, (struct sockaddr *)&their_addr, &addr_size);
+    unsigned char *ip = (unsigned char *)&sin->sin_addr.s_addr;
+    printf("%d %d %d %d\n", ip[0], ip[1], ip[2], ip[3]);
     messageMode = 1;
 }
 
-void startMessaging(char* referenc)
+void startMessaging(char* reference)
 {
 
   struct addrinfo hints, *res;
@@ -108,6 +108,7 @@ void startMessaging(char* referenc)
 // connect!
 
 connect(sockfd, res->ai_addr, res->ai_addrlen);
+ setupMessaging(reference)
   messageMode = 1;
 
 }
