@@ -19,6 +19,8 @@
 #define APP_PORT "3490" 
 
 map_t contacts;
+// a backwards version of the contacts hash map to look up a contact name based on ip
+map_t backwardscontacts;
 FILE * contactsWriteFile;
 
 int messageMode = 0;
@@ -80,7 +82,17 @@ void listenForConn()
     sockfd = accept(oldfd, (struct sockaddr *)&their_addr, &addr_size);
     close(oldfd); 
     unsigned char *ip = (unsigned char *)&sin->sin_addr.s_addr;
-    printf("%d %d %d %d\n", ip[0], ip[1], ip[2], ip[3]);
+    snprintf(ip, sizeof ip, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);  
+
+  char  *reference;
+   int error = hashmap_get(backwardscontacts, ip, (void**)(&reference));
+   if(error==MAP_OK){
+     //Use reference to set up messaging
+    } else {
+      //Use ip to set up messaging
+      reference = ip;
+    }
+    setupMessaging(reference);
     messageMode = 1;
 }
 
@@ -88,7 +100,6 @@ void startMessaging(char* reference)
 {
 
  setupMessaging(reference);
- printf("O");
   struct addrinfo hints, *res;
   // first, load up address structs with getaddrinfo():
   memset(&hints, 0, sizeof hints);
@@ -183,6 +194,7 @@ int parseWrite(char *ip, char *contactname){
 
 void loadContacts(){
   contacts = hashmap_new();
+  backwardscontacts = hashmap_new();
 
   FILE * fp;
   char * line = NULL;
@@ -200,6 +212,7 @@ void loadContacts(){
       char *argv[argv_size];
       splitBySpaces(line, argv);
       hashmap_put(contacts,argv[0], argv[1]);
+      hashmap_put(backwardscontacts, argv[1], argv[0]);
   }
 
   fclose(fp);
@@ -216,6 +229,7 @@ void saveContacts(){
 
 void add(char *IP, char *contactname){
   int error = hashmap_put(contacts, contactname, IP);
+  hashmap_put(backwardscontacts, IP, contactname);
   if(error==MAP_OK){
     printf("Successfully added %s\n", contactname);
   }else {
@@ -351,5 +365,7 @@ int main() {
 
   saveContacts();
   hashmap_free(contacts);
+    hashmap_free(backwardscontacts);
+
   return 0; 
 }
