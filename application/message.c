@@ -17,7 +17,6 @@
 #include <arpa/inet.h>
 
 #define APP_PORT "3490" 
-#define BACKLOG 10 
 
 map_t contacts;
 FILE * contactsWriteFile;
@@ -71,7 +70,7 @@ void listenForConn()
 
     oldfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     bind(oldfd, res->ai_addr, res->ai_addrlen);
-    listen(oldfd, BACKLOG);
+    listen(oldfd, 1);
 
     // now accept an incoming connection:
 
@@ -88,6 +87,8 @@ void listenForConn()
 void startMessaging(char* reference)
 {
 
+ setupMessaging(reference);
+ printf("O");
   struct addrinfo hints, *res;
   // first, load up address structs with getaddrinfo():
   memset(&hints, 0, sizeof hints);
@@ -101,15 +102,9 @@ void startMessaging(char* reference)
 
   sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
-  // bind it to the port we passed in to getaddrinfo(): 
-  bind(sockfd, res->ai_addr, res->ai_addrlen);
-
-  sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-
 // connect!
 
 connect(sockfd, res->ai_addr, res->ai_addrlen);
- setupMessaging(reference);
   messageMode = 1;
 
 }
