@@ -326,7 +326,7 @@ int main() {
         printf("Goodbye\n");
         break;
       }
-    } else if(strcmp(cmd, "listen")){
+    } else if(strcmp(cmd, "listen") ==0 ){
       listenForConn();  
     } else{
       if(messageMode){
