@@ -481,7 +481,7 @@ int main() {
     } else if(strcmp(cmd, "help") == 0){
       //help
       printf("Commands:\n");
-      printf("message (IP/contactname) - start messaging with the specific IP address or contacts\n");
+      printf("message (IP/contactname) - start messaging with the specific IP address or contact name\n");
       printf("add (IP) (contactname) - this will add a new contact based on IP address\n");
       printf("remove (contactname) - allows you remove a contanct\n");
       printf("contacts - shows all your contacts\n");
