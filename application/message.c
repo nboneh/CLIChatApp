@@ -52,7 +52,7 @@ void encryptRSA(char *inString, char *outString){
   unlink("temppubkey");
   unlink("tempintext");
 
-  file = fopen("savefiles/my.key.pub","r");
+  file = fopen("file.bin","r");
   int i = 0;
       int c;
   while ((c = fgetc(file)) != EOF)
@@ -135,7 +135,7 @@ void sendMessage(char* message){
   time_t rawtime;
   char * timestr;
   rawtime = time(NULL);
-  
+
   timestr = ctime ( &rawtime );
   timestr[strlen(timestr) -1] = '\0';
 
