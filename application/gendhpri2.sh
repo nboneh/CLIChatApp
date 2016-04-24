@@ -1,0 +1,1 @@
+openssl pkeyutl -derive -inkey savefiles/dhkey.tem -peerkey savefiles/dhpub.tem -out dhkey.pem

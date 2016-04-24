@@ -81,6 +81,12 @@ void handShake(int sender){
     //Sending mixture
     send(sockfd, mixture, 2048, 0);
 
+    //Waiting to receive recpient mixture
+    char mixture2[2048];
+    recv(sockfd, mixture2, 2048,0);
+    
+
+
     //...
     //send(sockfd, encpublicKey, 2048, 0);
     //recv(sockfd, encotherpublicKey,2048, 0);
