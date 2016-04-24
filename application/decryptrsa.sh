@@ -1,0 +1,1 @@
+openssl rsautl -decrypt -inkey savefiles/my.key -in tempintext -out file.bin

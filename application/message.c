@@ -65,6 +65,31 @@ void encryptRSA(char *inString, char *outString){
 
 }
 
+void decryptRSA(char *inString, char *outString){
+   FILE * file = fopen("temppubkey", "w");
+  fputs(otherpublicKey,file);
+  fclose(file);
+  file = fopen("tempintext","w");
+  fputs(inString,file);
+  fclose(file);
+  system( "bash decryptrsa.sh");
+
+  unlink("temppubkey");
+  unlink("tempintext");
+
+  file = fopen("file.bin","r");
+  int i = 0;
+      int c;
+  while ((c = fgetc(file)) != EOF)
+  { 
+        outString[i++] = (char) c;
+   }
+   outString[i] = '\0';
+  fclose(file);
+  unlink("file.bin");
+
+}
+
 void handShake(){
   //Just keys no DH for now for now
   printf("Establishing handshake...");
@@ -170,8 +195,14 @@ void sendMessage(char* message){
 
 void *receiveMessage(){
   while(1){
-    char message[1024];
-    int ret =recv(sockfd, message,1024, 0);
+    char encryptedmessage[1024];
+    int ret =recv(sockfd, encryptedmessage,1024, 0);
+
+    if(messageMode == 0){
+      //Exiting when message mode is done
+      return NULL;
+    }
+
     if(ret ==0){
       //Remote hang up exiting
       printf("\n");
@@ -183,11 +214,8 @@ void *receiveMessage(){
       return NULL;
     }
 
-    if(messageMode == 0){
-      //Exiting when message mode is done
-      return NULL;
-    }
-
+    char message[1024];
+    decryptRSA(encryptedmessage, message);
    pthread_mutex_lock(&lock); 
   //Critical section do not want to edit file at the same time as sender sends message
   FILE * messagefile = fopen(messageFileName, "a");
