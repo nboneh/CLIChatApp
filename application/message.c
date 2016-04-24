@@ -120,8 +120,7 @@ void handShake(int sender){
     //Generating the secret key
     system("gendhpri2.sh");
 
-
-       //Reading in mixture to send
+    //Reading in mixture to send
     file = fopen("savefiles/dhpub.tem", "r");
     char mixture[2048];
     i = 0;
@@ -266,7 +265,6 @@ void sendMessage(char* message){
   char compmessage[1024];
   snprintf(compmessage, 1024, "[%s]: %s", timestr, message);
 
-print_current_time_with_ms();
   //PerformingRsa
   char encryptmessage[1024];
   encryptRSA(compmessage, encryptmessage);
@@ -329,7 +327,6 @@ void *receiveMessage(){
 
     printf("\n");
     printMessageMode();
-    print_current_time_with_ms();
     fflush(stdout);
     struct timeval start;
     pthread_mutex_unlock(&lock); 
@@ -673,7 +670,6 @@ int main() {
       printf("remove (contactname) - allows you remove a contanct\n");
       printf("contacts - shows all your contacts\n");
       printf("IP - shows you your IP addresses\n");
-
       printf("quit or Ctrl-D - in order to exit the application\n");
     } else if(strcmp(cmd,"quit") == 0){
       if(messageMode){
