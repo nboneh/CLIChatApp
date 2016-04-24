@@ -453,8 +453,12 @@ void add(char *IP, char *contactname){
 }
 
 void removec(char *contactname){
-  int error = hashmap_remove(contacts, contactname);
+
+  char  *ip;
+  int error = hashmap_get(contacts, contactname, (void**)(&ip));
   if(error==MAP_OK){
+     hashmap_remove(contacts, contactname);
+    hashmap_remove(backwardscontacts, ip);
     printf("Successfully removed %s\n", contactname);
   }else {
     printf("Error removing %s\n", contactname);
