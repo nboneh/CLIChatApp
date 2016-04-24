@@ -346,10 +346,10 @@ if(ret == 0 || buf[0] == 'r'){
   close(sockfd);
 } else if(buf[0] == 'a'){
 
-  pthread_t recthread;
-    pthread_create(&recthread, NULL, receiveMessage, NULL);     
   messageMode = 1;
   handShake();
+  pthread_t recthread;
+  pthread_create(&recthread, NULL, receiveMessage, NULL);     
 
 } else {
   printf("Something went wrong\n");
@@ -498,14 +498,14 @@ int main() {
     }
 
     if(receiveRequest){
-      if(strcmp(cmd, "a") ==0 ){
-        pthread_t recthread;
-        pthread_create(&recthread, NULL, receiveMessage, NULL);     
+      if(strcmp(cmd, "a") ==0 ){    
         messageMode = 1;
         receiveRequest = 0;
         char * acceptmsg = "a";
         send(sockfd, acceptmsg, strlen(acceptmsg),0);
         handShake();
+        pthread_t recthread;
+        pthread_create(&recthread, NULL, receiveMessage, NULL); 
       } else if(strcmp(cmd, "r") ==0 ){
         receiveRequest = 0;
         char * rejectmsg = "r";
