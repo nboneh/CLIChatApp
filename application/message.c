@@ -40,6 +40,11 @@ int closeThreads = 0;
 pthread_mutex_t lock=PTHREAD_MUTEX_INITIALIZER;
 
 
+void print_current_time_with_ms ()
+{
+  system("date +%s%N | cut -b1-13");
+}
+
 void encryptRSA(char *inString, char *outString){
   FILE * file = fopen("temppubkey", "w");
   fputs(otherpublicKey,file);
@@ -173,8 +178,7 @@ void sendMessage(char* message){
   char compmessage[1024];
   snprintf(compmessage, 1024, "[%s]: %s", timestr, message);
 
-  struct timeval start;
-printf("took %lu\n",  start.tv_usec);
+print_current_time_with_ms();
   //PerformingRsa
   char encryptmessage[1024];
   encryptRSA(compmessage, encryptmessage);
@@ -237,9 +241,9 @@ void *receiveMessage(){
 
     printf("\n");
     printMessageMode();
+    print_current_time_with_ms();
     fflush(stdout);
     struct timeval start;
-  printf("took %lu\n",  start.tv_usec);
     pthread_mutex_unlock(&lock); 
   }
 }
@@ -477,6 +481,7 @@ int main() {
   //Getting username for prompt   
   char username[BUFSIZ];
   getlogin_r(username, BUFSIZ);
+
 
   printf("Welcome %s to CLI Messaging\n", username);      
 
