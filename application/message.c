@@ -40,12 +40,36 @@ int closeThreads = 0;
 pthread_mutex_t lock=PTHREAD_MUTEX_INITIALIZER;
 
 
+void encryptRSA(char *inString, char *outString){
+  FILE * file = fopen("temppubkey", "w");
+  fputs(otherpublicKey,file);
+  fclose(file);
+  file = fopen("tempintext","w");
+  fputs(inString,file);
+  fclose(file);
+  system( "bash encryptrsa.sh");
+
+  unlink("temppubkey");
+  unlink("tempintext");
+
+  file = fopen("savefiles/my.key.pub","r");
+  int i = 0;
+      int c;
+  while ((c = fgetc(file)) != EOF)
+  { 
+        outString[i++] = (char) c;
+   }
+   outString[i] = '\0';
+  fclose(file);
+  unlink("file.bin");
+
+}
+
 void handShake(){
   //Just keys no DH for now for now
   printf("Establishing handshake...");
   send(sockfd, mypublicKey, 2048, 0);
   recv(sockfd, otherpublicKey,2048, 0);
-  printf("%s\n", otherpublicKey);
 }
 
 void loadPubKey(){
@@ -111,19 +135,22 @@ void sendMessage(char* message){
   time_t rawtime;
   char * timestr;
   rawtime = time(NULL);
-
-
+  
   timestr = ctime ( &rawtime );
   timestr[strlen(timestr) -1] = '\0';
 
   char compmessage[1024];
   snprintf(compmessage, 1024, "[%s]: %s", timestr, message);
+
+  //PerformingRsa
+  char encryptmessage[1024];
+  encryptRSA(compmessage, encryptmessage);
  
   pthread_mutex_lock(&lock); 
   //Critical section do not want to edit file at the same time as listener receives message
-  if(send(sockfd, compmessage, 1024, 0) < 0){
+  if(send(sockfd, encryptmessage, 1024, 0) < 0){
     //Error occured exiting
-    printf("Remote hang up\n");
+    printf("Error occured\n");
     pthread_mutex_unlock(&lock); 
     messageMode = 0;
   }
@@ -408,7 +435,6 @@ int main() {
 
   //loading public key 
   loadPubKey();
-
 
   //Getting username for prompt   
   char username[BUFSIZ];

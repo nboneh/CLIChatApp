@@ -1,0 +1,1 @@
+openssl rsautl -encrypt -inkey temppubkey -pubin -in tempintext -out file.bin 
