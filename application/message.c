@@ -83,7 +83,7 @@ void handShake(int sender){
     char mixture2[2048];
     recv(sockfd, mixture2, 2048,0);
     //Writing needed mixture to a file
-    file = fopen("savfiles/dhpubmix.tem", "w");
+    file = fopen("savefiles/dhpubmix.tem", "w");
     fputs(mixture2, file);
     fclose(file);
 
@@ -106,7 +106,7 @@ void handShake(int sender){
     char mixture2[2048];
     recv(sockfd, mixture2, 2048,0);
     //Writing needed mixture to a file
-    file = fopen("savfiles/dhpubmix.tem", "w");
+    file = fopen("savefiles/dhpubmix.tem", "w");
     fputs(mixture2, file);
     fclose(file);
 
