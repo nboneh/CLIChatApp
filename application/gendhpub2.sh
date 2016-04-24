@@ -1,0 +1,1 @@
+openssl pkey -in savefiles/dhkey.tem -pubout -out savefiles/dhpub.tem

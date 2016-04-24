@@ -1,3 +1,5 @@
+/* message.c -- Nir Boneh messaging application
+ */
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -40,6 +42,59 @@ int closeThreads = 0;
 pthread_mutex_t lock=PTHREAD_MUTEX_INITIALIZER;
 
 
+void handShake(int sender){
+  printf("Establishing handshake...");
+  //Performing Diffie-Hellman
+  if(sender){
+    //Sender generates public dh key, his private key and the mixture to send
+    system("gendhpub.sh");
+    system("genpri.sh");
+    system("gendhpub2.sh");
+
+    //Reading in dh public key 
+    FILE *  file = fopen("savefiles/dhp.pem","r");
+    char public[2048];
+    int i = 0;
+    int c;
+    while ((c = fgetc(file)) != EOF)
+    { 
+        public[i++] = (char) c;
+    }
+    public[i] = '\0';
+    fclose(file);
+
+    //Sending dh public key
+    send(sockfd, public, 2048, 0);
+
+    //Reading in mixture to send
+    file = fopen("savefiles/dhpub.tem", "r");
+    char mixture[2048];
+    i = 0;
+    c;
+    while ((c = fgetc(file)) != EOF)
+    { 
+        mixture[i++] = (char) c;
+    }
+    mixture[i] = '\0';
+    fclose(file);
+
+    //Sending mixture
+    send(sockfd, mixture, 2048, 0);
+
+    //...
+    //send(sockfd, encpublicKey, 2048, 0);
+    //recv(sockfd, encotherpublicKey,2048, 0);
+  } else {
+    //Receiving public DH from sender
+     char public[2048];
+    recv(sockfd, public, 2048, 0);
+    system("genpri.sh");
+    //..
+    //recv(sockfd, encotherpublicKey,2048, 0);
+   // send(sockfd, encmypublicKey, 2048, 0);
+  }
+}
+
 void print_current_time_with_ms ()
 {
   system("bash time.sh");
@@ -59,7 +114,7 @@ void encryptRSA(char *inString, char *outString){
 
   file = fopen("file.bin","r");
   int i = 0;
-      int c;
+  int c;
   while ((c = fgetc(file)) != EOF)
   { 
         outString[i++] = (char) c;
@@ -67,7 +122,6 @@ void encryptRSA(char *inString, char *outString){
    outString[i] = '\0';
   fclose(file);
   unlink("file.bin");
-
 }
 
 void decryptRSA(char *inString, char *outString){
@@ -93,18 +147,6 @@ void decryptRSA(char *inString, char *outString){
   fclose(file);
   unlink("file.bin");
 
-}
-
-void handShake(int sender){
-  //Just keys no DH for now for now
-  printf("Establishing handshake...");
-  if(sender){
-    send(sockfd, mypublicKey, 2048, 0);
-    recv(sockfd, otherpublicKey,2048, 0);
-  } else {
-    recv(sockfd, otherpublicKey,2048, 0);
-    send(sockfd, mypublicKey, 2048, 0);
-  }
 }
 
 void loadPubKey(){
@@ -617,7 +659,6 @@ int main() {
     shutdown(listenfd,2);
     close(listenfd);
   }
-
 
   return 0; 
 }

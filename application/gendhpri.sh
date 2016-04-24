@@ -1,0 +1,1 @@
+openssl genpkey -paramfile savefiles/dhp.pem -out savefiles/dhkey1.pem
