@@ -47,9 +47,9 @@ void handShake(int sender){
   //Performing Diffie-Hellman
   if(sender){
     //Sender generates public dh key, his private key and the mixture to send
-    system("gendhpub.sh");
-    system("gendhpri.sh");
-    system("gendhpub2.sh");
+    system("bash gendhpub.sh");
+    system("bash gendhpri.sh");
+    system("bash gendhpub2.sh");
 
     //Reading in dh public key 
     FILE *  file = fopen("savefiles/dhp.pem","r");
@@ -70,7 +70,6 @@ void handShake(int sender){
     file = fopen("savefiles/dhpub.tem", "r");
     char mixture[2048];
     i = 0;
-    c;
     while ((c = fgetc(file)) != EOF)
     { 
         mixture[i++] = (char) c;
@@ -91,7 +90,7 @@ void handShake(int sender){
     fclose(file);
 
     //Generating the secret key
-    system("gendhpri2.sh");
+    system("bash gendhpri2.sh");
 
     //...
     //send(sockfd, encpublicKey, 2048, 0);
@@ -106,8 +105,8 @@ void handShake(int sender){
     fclose(file);
 
     //Generating private key and mixture to send
-    system("gendhpri.sh");
-    system("gendhpub2.sh");
+    system("bash gendhpri.sh");
+    system("bash gendhpub2.sh");
     //Waiting to receive needed mixture to generate secret
     char mixture2[2048];
     recv(sockfd, mixture2, 2048,0);
@@ -118,7 +117,7 @@ void handShake(int sender){
     fclose(file);
 
     //Generating the secret key
-    system("gendhpri2.sh");
+    system("bash gendhpri2.sh");
 
     //Reading in mixture to send
     file = fopen("savefiles/dhpub.tem", "r");
