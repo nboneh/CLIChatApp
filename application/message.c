@@ -90,11 +90,16 @@ void decryptRSA(char *inString, char *outString){
 
 }
 
-void handShake(){
+void handShake(int sender){
   //Just keys no DH for now for now
   printf("Establishing handshake...");
-  send(sockfd, mypublicKey, 2048, 0);
-  recv(sockfd, otherpublicKey,2048, 0);
+  if(sender){
+    send(sockfd, mypublicKey, 2048, 0);
+    recv(sockfd, otherpublicKey,2048, 0);
+  } else {
+    recv(sockfd, otherpublicKey,2048, 0);
+    send(sockfd, mypublicKey, 2048, 0);
+  }
 }
 
 void loadPubKey(){
@@ -347,7 +352,7 @@ if(ret == 0 || buf[0] == 'r'){
 } else if(buf[0] == 'a'){
 
   messageMode = 1;
-  handShake();
+  handShake(1);
   pthread_t recthread;
   pthread_create(&recthread, NULL, receiveMessage, NULL);     
 
@@ -503,7 +508,7 @@ int main() {
         receiveRequest = 0;
         char * acceptmsg = "a";
         send(sockfd, acceptmsg, strlen(acceptmsg),0);
-        handShake();
+        handShake(0);
         pthread_t recthread;
         pthread_create(&recthread, NULL, receiveMessage, NULL); 
       } else if(strcmp(cmd, "r") ==0 ){
