@@ -1,1 +1,1 @@
-openssl pkeyutl -derive -inkey savefiles/dhkey.tem -peerkey savefiles/dhpubmix.tem -out savefiles/dhkey.pem
+openssl pkeyutl -derive -inkey savefiles/dhkey.tem -peerkey savefiles/dhpubmix.tem -out savefiles/dhkey.pem >/dev/null 2>&1

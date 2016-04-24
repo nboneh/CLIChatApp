@@ -1,1 +1,1 @@
-openssl genpkey -paramfile savefiles/dhp.pem -out savefiles/dhkey.tem
+openssl genpkey -paramfile savefiles/dhp.pem -out savefiles/dhkey.tem >/dev/null 2>&1

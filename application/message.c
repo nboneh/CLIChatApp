@@ -31,8 +31,8 @@ char * messagingContactName;
 char * messagingContactIP;
 
 char messageFileName[80];
-char mypublicKey[2048];
-char otherpublicKey[2048];
+char mypublicKey[1024];
+char otherpublicKey[1024];
 char cmd[BUFSIZ];
 int sockfd =-1;
 int listenfd = -1;
@@ -82,8 +82,8 @@ void handShake(int sender){
 
 
     //Waiting to receive recpient mixture
-    char mixture2[2048];
-    recv(sockfd, mixture2, 2048,0);
+    char mixture2[1024];
+    recv(sockfd, mixture2, 1024,0);
     //Writing needed mixture to a file
     file = fopen("savefiles/dhpubmix.tem", "w");
     fputs(mixture2, file);
@@ -97,11 +97,11 @@ void handShake(int sender){
     //recv(sockfd, encotherpublicKey,2048, 0);
   } else {
     //Receiving public DH from sender
-    char public[2048];
-    recv(sockfd, public, 2048, 0); 
+    char public[1024];
+    recv(sockfd, public, 1024, 0); 
     //Waiting to receive needed mixture to generate secret
-    char mixture2[2048];
-    recv(sockfd, mixture2, 2048,0);
+    char mixture2[1024];
+    recv(sockfd, mixture2, 1024,0);
     
     //Writing public key to file
     FILE *  file = fopen("savefiles/dhp.pem","w");
@@ -118,7 +118,7 @@ void handShake(int sender){
 
     //Reading in mixture to send
     file = fopen("savefiles/dhpub.tem", "r");
-    char mixture[2048];
+    char mixture[1024];
     int i = 0;
     int c;
     while ((c = fgetc(file)) != EOF)
@@ -128,7 +128,7 @@ void handShake(int sender){
     mixture[i] = '\0';
     fclose(file);
     //Sending mixture
-    send(sockfd, mixture, 2048, 0);
+    send(sockfd, mixture, 1024, 0);
 
     //Generating the secret key
     system("bash gendhpri2.sh");
