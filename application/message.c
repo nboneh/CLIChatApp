@@ -166,12 +166,15 @@ void sendMessage(char* message){
   char * timestr;
   rawtime = time(NULL);
 
+
   timestr = ctime ( &rawtime );
   timestr[strlen(timestr) -1] = '\0';
 
   char compmessage[1024];
   snprintf(compmessage, 1024, "[%s]: %s", timestr, message);
 
+  struct timeval start;
+printf("took %lu\n",  start.tv_usec);
   //PerformingRsa
   char encryptmessage[1024];
   encryptRSA(compmessage, encryptmessage);
@@ -235,6 +238,8 @@ void *receiveMessage(){
     printf("\n");
     printMessageMode();
     fflush(stdout);
+    struct timeval start;
+  printf("took %lu\n",  start.tv_usec);
     pthread_mutex_unlock(&lock); 
   }
 }
