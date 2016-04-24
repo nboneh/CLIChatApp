@@ -43,7 +43,7 @@ pthread_mutex_t lock=PTHREAD_MUTEX_INITIALIZER;
 
 
 void handShake(int sender){
-  printf("Establishing handshake...");
+  printf("Establishing handshake...\n");
   //Performing Diffie-Hellman
   if(sender){
     //Sender generates public dh key, his private key and the mixture to send
@@ -79,13 +79,11 @@ void handShake(int sender){
 
     //Sending mixture
     send(sockfd, mixture, 2048, 0);
-
     //Waiting to receive recpient mixture
     char mixture2[2048];
     recv(sockfd, mixture2, 2048,0);
-
     //Writing needed mixture to a file
-    file = fopen("savfile/dhpubmix.tem", "w");
+    file = fopen("savfiles/dhpubmix.tem", "w");
     fputs(mixture2, file);
     fclose(file);
 
@@ -108,7 +106,7 @@ void handShake(int sender){
     char mixture2[2048];
     recv(sockfd, mixture2, 2048,0);
     //Writing needed mixture to a file
-    file = fopen("savfile/dhpubmix.tem", "w");
+    file = fopen("savfiles/dhpubmix.tem", "w");
     fputs(mixture2, file);
     fclose(file);
 
