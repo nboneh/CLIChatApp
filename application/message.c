@@ -97,27 +97,24 @@ void handShake(int sender){
     //recv(sockfd, encotherpublicKey,2048, 0);
   } else {
     //Receiving public DH from sender
-     char public[2048];
+    char public[2048];
     recv(sockfd, public, 2048, 0); 
     //Writing public key to file
     FILE *  file = fopen("savefiles/dhp.pem","w");
     fputs(public, file);
     fclose(file);
 
-    //Generating private key and mixture to send
-    system("bash gendhpri.sh");
-    system("bash gendhpub2.sh");
     //Waiting to receive needed mixture to generate secret
     char mixture2[2048];
     recv(sockfd, mixture2, 2048,0);
-
     //Writing needed mixture to a file
     file = fopen("savfile/dhpubmix.tem", "w");
     fputs(mixture2, file);
     fclose(file);
 
-    //Generating the secret key
-    system("bash gendhpri2.sh");
+    //Generating private key and mixture to send
+    system("bash gendhpri.sh");
+    system("bash gendhpub2.sh");
 
     //Reading in mixture to send
     file = fopen("savefiles/dhpub.tem", "r");
@@ -130,9 +127,11 @@ void handShake(int sender){
     }
     mixture[i] = '\0';
     fclose(file);
-
     //Sending mixture
     send(sockfd, mixture, 2048, 0);
+
+    //Generating the secret key
+    system("bash gendhpri2.sh");
     //..
     //recv(sockfd, encotherpublicKey,2048, 0);
    // send(sockfd, encmypublicKey, 2048, 0);
