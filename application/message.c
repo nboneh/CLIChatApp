@@ -211,7 +211,7 @@ void *receiveMessage(){
       return NULL;
     }
 
-    if(ret ==0){
+    if(ret <= 1){
       //Remote hang up exiting
       printf("\n");
       printf("Remote hang up\n");
