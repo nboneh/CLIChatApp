@@ -42,7 +42,7 @@ pthread_mutex_t lock=PTHREAD_MUTEX_INITIALIZER;
 
 void print_current_time_with_ms ()
 {
-  system("date +%s%N | cut -b1-13");
+  system("bash time.sh");
 }
 
 void encryptRSA(char *inString, char *outString){
