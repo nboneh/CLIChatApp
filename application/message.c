@@ -76,9 +76,10 @@ void handShake(int sender){
     }
     mixture[i] = '\0';
     fclose(file);
-
     //Sending mixture
     send(sockfd, mixture, 2048, 0);
+
+
     //Waiting to receive recpient mixture
     char mixture2[2048];
     recv(sockfd, mixture2, 2048,0);
@@ -441,8 +442,8 @@ if(ret == 0 || buf[0] == 'r'){
   close(sockfd);
 } else if(buf[0] == 'a'){
 
-  messageMode = 1;
   handShake(1);
+  messageMode = 1;
   pthread_t recthread;
   pthread_create(&recthread, NULL, receiveMessage, NULL);     
 
@@ -599,11 +600,11 @@ int main() {
 
     if(receiveRequest){
       if(strcmp(cmd, "a") ==0 ){    
-        messageMode = 1;
         receiveRequest = 0;
         char * acceptmsg = "a";
         send(sockfd, acceptmsg, strlen(acceptmsg),0);
         handShake(0);
+        messageMode = 1;
         pthread_t recthread;
         pthread_create(&recthread, NULL, receiveMessage, NULL); 
       } else if(strcmp(cmd, "r") ==0 ){
