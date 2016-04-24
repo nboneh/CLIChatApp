@@ -123,8 +123,8 @@ void handShake(int sender){
     //Reading in mixture to send
     file = fopen("savefiles/dhpub.tem", "r");
     char mixture[2048];
-    i = 0;
-    c;
+    int i = 0;
+    int c;
     while ((c = fgetc(file)) != EOF)
     { 
         mixture[i++] = (char) c;
