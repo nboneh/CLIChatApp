@@ -29,13 +29,36 @@ char * messagingContactName;
 char * messagingContactIP;
 
 char messageFileName[80];
+char mypublicKey[2048];
+char otherpublicKey[2048];
 char cmd[BUFSIZ];
 int sockfd =-1;
 int listenfd = -1;
 int closeThreads = 0;
 
+
 pthread_mutex_t lock=PTHREAD_MUTEX_INITIALIZER;
 
+
+void handShake(){
+  //Just keys no DH for now for now
+  printf("Establishing handshake...");
+  send(sockfd, mypublicKey, 2048, 0);
+  recv(sockfd, otherpublicKey,2048, 0);
+  printf("%s\n", otherpublicKey);
+}
+
+void loadPubKey(){
+  FILE * fp = fopen("savefiles/my.key.pub","r");
+  int i = 0;
+      int c;
+  while ((c = fgetc(fp)) != EOF)
+  { 
+        mypublicKey[i++] = (char) c;
+   }
+   mypublicKey[i] = '\0';
+  fclose(fp);
+}
 
 int fileEmpty(FILE * file){
    fseek(file, 0, SEEK_END);
@@ -271,8 +294,7 @@ if(ret == 0 || buf[0] == 'r'){
   pthread_t recthread;
     pthread_create(&recthread, NULL, receiveMessage, NULL);     
   messageMode = 1;
-   printf("Establishing handshake... \n");
-    sleep(5);
+  handShake();
 
 } else {
   printf("Something went wrong\n");
@@ -378,9 +400,14 @@ int main() {
    struct stat st = {0};
   if (stat("savefiles", &st) == -1) {
        mkdir("savefiles", 0700);
+       //Generating RSA keys using bash
+       system("bash genrsa.sh");
   }
   //Loading contacts
   loadContacts();
+
+  //loading public key 
+  loadPubKey();
 
 
   //Getting username for prompt   
@@ -424,8 +451,7 @@ int main() {
         receiveRequest = 0;
         char * acceptmsg = "a";
         send(sockfd, acceptmsg, strlen(acceptmsg),0);
-        printf("Establishing handshake... \n");
-        sleep(5);
+        handShake();
       } else if(strcmp(cmd, "r") ==0 ){
         receiveRequest = 0;
         char * rejectmsg = "r";
