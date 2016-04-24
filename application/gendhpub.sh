@@ -1,1 +1,1 @@
-openssl genpkey -genparam -algorithm DH -out savefiles/dhp.pem 
+openssl genpkey -genparam -algorithm DH -out savefiles/dhp.pem > /dev/null

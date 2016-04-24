@@ -53,7 +53,7 @@ void handShake(int sender){
 
     //Reading in dh public key 
     FILE *  file = fopen("savefiles/dhp.pem","r");
-    char public[2048];
+    char public[1024];
     int i = 0;
     int c;
     while ((c = fgetc(file)) != EOF)
@@ -64,11 +64,11 @@ void handShake(int sender){
     fclose(file);
 
     //Sending dh public key
-    send(sockfd, public, 2048, 0);
+    send(sockfd, public, 1024, 0);
 
     //Reading in mixture to send
     file = fopen("savefiles/dhpub.tem", "r");
-    char mixture[2048];
+    char mixture[1024];
     i = 0;
     while ((c = fgetc(file)) != EOF)
     { 
@@ -77,7 +77,8 @@ void handShake(int sender){
     mixture[i] = '\0';
     fclose(file);
     //Sending mixture
-    send(sockfd, mixture, 2048, 0);
+    send(sockfd, mixture, 1024, 0);
+     
 
 
     //Waiting to receive recpient mixture
