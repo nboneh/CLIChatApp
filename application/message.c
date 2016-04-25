@@ -108,8 +108,7 @@ void handShake(int sender){
     rewind(file);
     while (i < length)
     { 
-      fgetc(file);
-        encpubkey[i++] = (char) c;
+        encpubkey[i++] = fgetc(file);
     }
    encpubkey[i] = '\0';
    fclose(file);
@@ -132,8 +131,7 @@ void handShake(int sender){
     rewind(file);
   while (i < length)
   { 
-        fgetc(file);
-        otherpublicKey[i++] = (char) c;
+        otherpublicKey[i++] = fgetc(file);
   }
    otherpublicKey[i] = '\0';
    fclose(file);
@@ -199,8 +197,7 @@ void handShake(int sender){
   i = 0;
   while (i < length)
   { 
-    fgetc(file);
-        otherpublicKey[i++] = (char) c;
+        otherpublicKey[i++] = (char) fgetc(file);
   }
   fclose(file);
    otherpublicKey[i] = '\0';
@@ -222,8 +219,7 @@ void handShake(int sender){
   i = 0;
     while (i < length)
     { 
-      fgetc(file);
-        encpubkey[i++] = (char) c;
+        encpubkey[i++] = (char) fgetc(file);
     }
    encpubkey[i] = '\0';
    fclose(file);
