@@ -103,7 +103,8 @@ void handShake(int sender){
 
     char encpubkey[KEY_SIZE];
     i = 0;
-    while ((c = fgetc(file)) != EOF)
+    int length = strlen(mypublicKey) + 8 - (strlen(mypublicKey) % 8);
+    while (i < length)
     { 
         encpubkey[i++] = (char) c;
     }
@@ -176,6 +177,7 @@ void handShake(int sender){
     //Receving other encrypted public key
    char encotherpubkey[KEY_SIZE];
     recv(sockfd,encotherpubkey,KEY_SIZE,0);
+    printf("%s\n",encotherpubkey);
 
     //Decrypting with AES and DH
    file = fopen("file2dh.bin", "w");
@@ -202,8 +204,9 @@ void handShake(int sender){
     file = fopen("filedh.bin", "r");
 
     char encpubkey[KEY_SIZE];
-    i = 0;
-    while ((c = fgetc(file)) != EOF)
+     i = 0;
+    int length = strlen(mypublicKey) + 8 - (strlen(mypublicKey) % 8);
+    while (i < length)
     { 
         encpubkey[i++] = (char) c;
     }
