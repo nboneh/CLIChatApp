@@ -92,10 +92,40 @@ void handShake(int sender){
     //Generating the secret key
     system("bash gendhpri2.sh");
 
-    //...
-    //send(sockfd, encpublicKey, 2048, 0);
-    //recv(sockfd, encotherpublicKey,2048, 0);
+    //Encrypting RSA public key and sending
+    file = fopen("tempintext", "w");
+    fputs(mypublicKey, file);
+    fclose(file);
+
+    system("bash encryptdh.sh");
+    file = fopen("file.bin", "r");
+
+    encpubkey[1024];
+    i = 0;
+    while ((c = fgetc(file)) != EOF)
+    { 
+        encpubkey[i++] = (char) c;
+    }
+   encpubkey[i] = '\0';
+   unlink("file.bin");
+   unlink("tempintext");
+   send(sockfd, encpubkey, 1024,0);
+
+   //Receving other encrypted public key
+   encotherpubkey[1024];
+   recv(sockfd,encotherpubkey,1024,0);
+
+   //Decrypting with AES and DH
+   file = fopen("tempouttext"   ,"r");
+  i = 0;
+  while ((c = fgetc(file)) != EOF)
+  { 
+        otherpublicKey[i++] = (char) c;
+  }
+   otherpublicKey[i] = '\0';
+   unlink("tempouttext");
   } else {
+    //The receiver
     //Receiving public DH from sender
     char public[1024];
     recv(sockfd, public, 1024, 0); 
@@ -132,10 +162,40 @@ void handShake(int sender){
 
     //Generating the secret key
     system("bash gendhpri2.sh");
-    //..
-    //recv(sockfd, encotherpublicKey,2048, 0);
-   // send(sockfd, encmypublicKey, 2048, 0);
+    
+    //Receving other encrypted public key
+   encotherpubkey[1024];
+   recv(sockfd,encotherpubkey,1024,0);
+
+   //Decrypting with AES and DH
+   file = fopen("tempouttext"   ,"r");
+  i = 0;
+  while ((c = fgetc(file)) != EOF)
+  { 
+        otherpublicKey[i++] = (char) c;
   }
+   otherpublicKey[i] = '\0';
+   unlink("tempouttext");
+  }
+
+    //Encrypting RSA public key and sending
+    file = fopen("tempintext", "w");
+    fputs(mypublicKey, file);
+    fclose(file);
+
+    system("bash encryptdh.sh");
+    file = fopen("file.bin", "r");
+
+    encpubkey[1024];
+    i = 0;
+    while ((c = fgetc(file)) != EOF)
+    { 
+        encpubkey[i++] = (char) c;
+    }
+   encpubkey[i] = '\0';
+   unlink("file.bin");
+   unlink("tempintext");
+   send(sockfd, encpubkey, 1024,0);
 }
 
 void print_current_time_with_ms ()
