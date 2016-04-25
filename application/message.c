@@ -103,7 +103,7 @@ void handShake(int sender){
 
     char encpubkey[KEY_SIZE];
     i = 0;
-    while (i < length)
+    while ((c = fgetc(file)) != EOF)
     { 
         encpubkey[i++] = (char) c;
     }
