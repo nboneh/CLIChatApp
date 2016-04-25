@@ -94,12 +94,12 @@ void handShake(int sender){
     
 
      //Encrypting RSA public key and sending
-    file = fopen("tempintext", "w");
+    file = fopen("tempintextdh", "w");
     fputs(mypublicKey, file);
     fclose(file);
 
     system("bash encryptdh.sh");
-    file = fopen("file.bin", "r");
+    file = fopen("filedh.bin", "r");
 
     char encpubkey[1024];
     i = 0;
@@ -116,12 +116,12 @@ void handShake(int sender){
    recv(sockfd,encotherpubkey,1024,0);
 
     //Decrypting with AES and DH
-   file = fopen("file2.bin", "w");
+   file = fopen("file2dh.bin", "w");
    fputs(encotherpubkey,file);
    fclose(file);
    system("bash decryptdh.sh");
     
-  file = fopen("tempouttext"   ,"r");
+  file = fopen("tempouttextdh"   ,"r");
   i = 0;
   while ((c = fgetc(file)) != EOF)
   { 
@@ -130,10 +130,10 @@ void handShake(int sender){
    otherpublicKey[i] = '\0';
    fclose(file);
 
-   unlink("tempouttext");
-  unlink("file.bin");
-    unlink("file2.bin");
-   unlink("tempintext");
+   unlink("tempouttextdh");
+  unlink("filedh.bin");
+    unlink("file2dh.bin");
+   unlink("tempintextdh");
   } else {
     //The receiver
     //Receiving public DH from sender
@@ -176,15 +176,15 @@ void handShake(int sender){
     
     //Receving other encrypted public key
    char encotherpubkey[1024];
-   recv(sockfd,encotherpubkey,1024,0);
+    recv(sockfd,encotherpubkey,1024,0);
 
     //Decrypting with AES and DH
-   file = fopen("file2.bin", "w");
+   file = fopen("file2dh.bin", "w");
    fputs(encotherpubkey,file);
    fclose(file);
    system("bash decryptdh.sh");
     
-  file = fopen("tempouttext"   ,"r");
+  file = fopen("tempouttextdh"   ,"r");
   i = 0;
   while ((c = fgetc(file)) != EOF)
   { 
@@ -194,12 +194,12 @@ void handShake(int sender){
    otherpublicKey[i] = '\0';
 
     //Encrypting RSA public key and sending
-    file = fopen("tempintext", "w");
+    file = fopen("tempintextdh", "w");
     fputs(mypublicKey, file);
     fclose(file);
 
     system("bash encryptdh.sh");
-    file = fopen("file.bin", "r");
+    file = fopen("filedh.bin", "r");
 
     char encpubkey[1024];
     i = 0;
@@ -211,10 +211,10 @@ void handShake(int sender){
    fclose(file);
    send(sockfd, encpubkey, 1024,0);
    
-    unlink("tempouttext");
-  unlink("file.bin");
-    unlink("file2.bin");
-   unlink("tempintext");
+   unlink("tempouttextdh");
+  unlink("filedh.bin");
+    unlink("file2dh.bin");
+   unlink("tempintextdh");
  }
 }
 
