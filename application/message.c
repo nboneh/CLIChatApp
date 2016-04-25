@@ -211,7 +211,7 @@ void handShake(int sender){
    fclose(file);
    send(sockfd, encpubkey, 1024,0);
    
-      unlink("tempouttext");
+    unlink("tempouttext");
   unlink("file.bin");
     unlink("file2.bin");
    unlink("tempintext");
