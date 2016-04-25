@@ -64,6 +64,7 @@ void handShake(int sender){
     fclose(file);
 
     //Sending dh public key
+    sleep(1);
     send(sockfd, public, 1024, 0);
 
     //Reading in mixture to send
@@ -77,6 +78,7 @@ void handShake(int sender){
     mixture[i] = '\0';
     fclose(file);
     //Sending mixture
+    sleep(1);
     send(sockfd, mixture, 1024, 0);
      
 
@@ -91,8 +93,6 @@ void handShake(int sender){
 
     //Generating the secret key
     system("bash gendhpri2.sh");
-     //Making sure to wait 2 seconds for receiver to finish generating secret
-    sleep(2);
 
     //Encrypting RSA public key and sending
     file = fopen("tempintext", "w");
@@ -111,6 +111,7 @@ void handShake(int sender){
    encpubkey[i] = '\0';
    unlink("file.bin");
    unlink("tempintext");
+       sleep(1);
    send(sockfd, encpubkey, 1024,0);
 
    //Receving other encrypted public key
@@ -165,6 +166,7 @@ void handShake(int sender){
     mixture[i] = '\0';
     fclose(file);
     //Sending mixture
+        sleep(1);
     send(sockfd, mixture, 1024, 0);
 
     //Generating the secret key
@@ -207,6 +209,7 @@ void handShake(int sender){
    encpubkey[i] = '\0';
    unlink("file.bin");
    unlink("tempintext");
+       sleep(1);
    send(sockfd, encpubkey, 1024,0);
  }
 }
