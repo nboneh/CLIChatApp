@@ -116,6 +116,7 @@ void handShake(int sender){
    recv(sockfd,encotherpubkey,1024,0);
 
    //Decrypting with AES and DH
+   system("bash decryptdh.sh");
    file = fopen("tempouttext"   ,"r");
   i = 0;
   while ((c = fgetc(file)) != EOF)
@@ -168,6 +169,7 @@ void handShake(int sender){
    recv(sockfd,encotherpubkey,1024,0);
 
    //Decrypting with AES and DH
+   system("bash decryptdh.sh");
    file = fopen("tempouttext"   ,"r");
   i = 0;
   while ((c = fgetc(file)) != EOF)
