@@ -100,7 +100,7 @@ void handShake(int sender){
     system("bash encryptdh.sh");
     file = fopen("file.bin", "r");
 
-    encpubkey[1024];
+   char encpubkey[1024];
     i = 0;
     while ((c = fgetc(file)) != EOF)
     { 
@@ -112,7 +112,7 @@ void handShake(int sender){
    send(sockfd, encpubkey, 1024,0);
 
    //Receving other encrypted public key
-   encotherpubkey[1024];
+  char encotherpubkey[1024];
    recv(sockfd,encotherpubkey,1024,0);
 
    //Decrypting with AES and DH
@@ -164,7 +164,7 @@ void handShake(int sender){
     system("bash gendhpri2.sh");
     
     //Receving other encrypted public key
-   encotherpubkey[1024];
+   char encotherpubkey[1024];
    recv(sockfd,encotherpubkey,1024,0);
 
    //Decrypting with AES and DH
@@ -176,7 +176,6 @@ void handShake(int sender){
   }
    otherpublicKey[i] = '\0';
    unlink("tempouttext");
-  }
 
     //Encrypting RSA public key and sending
     file = fopen("tempintext", "w");
@@ -186,7 +185,7 @@ void handShake(int sender){
     system("bash encryptdh.sh");
     file = fopen("file.bin", "r");
 
-    encpubkey[1024];
+    char encpubkey[1024];
     i = 0;
     while ((c = fgetc(file)) != EOF)
     { 
@@ -196,6 +195,7 @@ void handShake(int sender){
    unlink("file.bin");
    unlink("tempintext");
    send(sockfd, encpubkey, 1024,0);
+ }
 }
 
 void print_current_time_with_ms ()
