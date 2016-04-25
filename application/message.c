@@ -91,6 +91,8 @@ void handShake(int sender){
 
     //Generating the secret key
     system("bash gendhpri2.sh");
+     //Making sure to wait 2 seconds for receiver to finish generating secret
+    sleep(2);
 
     //Encrypting RSA public key and sending
     file = fopen("tempintext", "w");
@@ -167,8 +169,7 @@ void handShake(int sender){
 
     //Generating the secret key
     system("bash gendhpri2.sh");
-    //Making sure to wait 2 seconds for receiver to finish generating secret
-    sleep(2);
+  
     
     //Receving other encrypted public key
    char encotherpubkey[1024];
