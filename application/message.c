@@ -19,6 +19,7 @@
 #include <time.h>
 
 #define APP_PORT "3490" 
+#define KEY_SIZE 512
 
 map_t contacts;
 // a backwards version of the contacts hash map to look up a contact name based on ip
@@ -31,8 +32,8 @@ char * messagingContactName;
 char * messagingContactIP;
 
 char messageFileName[80];
-char mypublicKey[1024];
-char otherpublicKey[1024];
+char mypublicKey[KEY_SIZE];
+char otherpublicKey[KEY_SIZE];
 char cmd[BUFSIZ];
 int sockfd =-1;
 int listenfd = -1;
@@ -53,7 +54,7 @@ void handShake(int sender){
 
     //Reading in dh public key 
     FILE *  file = fopen("savefiles/dhp.pem","r");
-    char public[1024];
+    char public[KEY_SIZE];
     int i = 0;
     int c;
     while ((c = fgetc(file)) != EOF)
@@ -64,11 +65,11 @@ void handShake(int sender){
     fclose(file);
 
     //Sending dh public key
-    send(sockfd, public, 1024, 0);
+    send(sockfd, public, KEY_SIZE, 0);
 
     //Reading in mixture to send
     file = fopen("savefiles/dhpub.tem", "r");
-    char mixture[1024];
+    char mixture[KEY_SIZE];
     i = 0;
     while ((c = fgetc(file)) != EOF)
     { 
@@ -77,13 +78,13 @@ void handShake(int sender){
     mixture[i] = '\0';
     fclose(file);
     //Sending mixture
-    send(sockfd, mixture, 1024, 0);
+    send(sockfd, mixture, KEY_SIZE, 0);
      
 
 
     //Waiting to receive recpient mixture
-    char mixture2[1024];
-    recv(sockfd, mixture2, 1024,0);
+    char mixture2[KEY_SIZE];
+    recv(sockfd, mixture2, KEY_SIZE,0);
     //Writing needed mixture to a file
     file = fopen("savefiles/dhpubmix.tem", "w");
     fputs(mixture2, file);
@@ -101,7 +102,7 @@ void handShake(int sender){
     system("bash encryptdh.sh");
     file = fopen("filedh.bin", "r");
 
-    char encpubkey[512];
+    char encpubkey[KEY_SIZE];
     i = 0;
     while ((c = fgetc(file)) != EOF)
     { 
@@ -109,11 +110,11 @@ void handShake(int sender){
     }
    encpubkey[i] = '\0';
    fclose(file);
-   send(sockfd, encpubkey, 512,0);
+   send(sockfd, encpubkey, KEY_SIZE,0);
 
  //Receving other encrypted public key
-   char encotherpubkey[512];
-   recv(sockfd,encotherpubkey,512,0);
+   char encotherpubkey[KEY_SIZE];
+   recv(sockfd,encotherpubkey,KEY_SIZE,0);
 
     //Decrypting with AES and DH
    file = fopen("file2dh.bin", "w");
@@ -130,18 +131,18 @@ void handShake(int sender){
    otherpublicKey[i] = '\0';
    fclose(file);
 
-  unlink("tempouttextdh");
+   unlink("tempouttextdh");
   unlink("filedh.bin");
-    unlink("file2dh.bin");
+  unlink("file2dh.bin");
    unlink("tempintextdh");
   } else {
     //The receiver
     //Receiving public DH from sender
-    char public[1024];
-    recv(sockfd, public, 1024, 0); 
+    char public[KEY_SIZE];
+    recv(sockfd, public, KEY_SIZE, 0); 
     //Waiting to receive needed mixture to generate secret
-    char mixture2[1024];
-    recv(sockfd, mixture2, 1024,0);
+    char mixture2[KEY_SIZE];
+    recv(sockfd, mixture2, KEY_SIZE,0);
     
     //Writing public key to file
     FILE *  file = fopen("savefiles/dhp.pem","w");
@@ -158,7 +159,7 @@ void handShake(int sender){
 
     //Reading in mixture to send
     file = fopen("savefiles/dhpub.tem", "r");
-    char mixture[1024];
+    char mixture[KEY_SIZE];
     int i = 0;
     int c;
     while ((c = fgetc(file)) != EOF)
@@ -168,15 +169,15 @@ void handShake(int sender){
     mixture[i] = '\0';
     fclose(file);
     //Sending mixture
-    send(sockfd, mixture, 1024, 0);
+    send(sockfd, mixture, KEY_SIZE, 0);
 
     //Generating the secret key
     system("bash gendhpri2.sh");
   
     
     //Receving other encrypted public key
-   char encotherpubkey[512];
-    recv(sockfd,encotherpubkey,512,0);
+   char encotherpubkey[KEY_SIZE];
+    recv(sockfd,encotherpubkey,KEY_SIZE,0);
 
     //Decrypting with AES and DH
    file = fopen("file2dh.bin", "w");
@@ -202,7 +203,7 @@ void handShake(int sender){
     system("bash encryptdh.sh");
     file = fopen("filedh.bin", "r");
 
-    char encpubkey[512];
+    char encpubkey[KEY_SIZE];
     i = 0;
     while ((c = fgetc(file)) != EOF)
     { 
@@ -210,11 +211,12 @@ void handShake(int sender){
     }
    encpubkey[i] = '\0';
    fclose(file);
-   send(sockfd, encpubkey, 512,0);
+   sleep(1);
+   send(sockfd, encpubkey, KEY_SIZE,0);
    
    unlink("tempouttextdh");
   unlink("filedh.bin");
-    unlink("file2dh.bin");
+  unlink("file2dh.bin");
    unlink("tempintextdh");
  }
 }
