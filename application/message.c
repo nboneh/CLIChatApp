@@ -112,15 +112,16 @@ void handShake(int sender){
     }
    encpubkey[i] = '\0';
    fclose(file);
-   send(sockfd, encpubkey, KEY_SIZE,0);
+   send(sockfd, encpubkey, i,0);
 
  //Receving other encrypted public key
    char encotherpubkey[KEY_SIZE];
-   recv(sockfd,encotherpubkey,KEY_SIZE,0);
+     int size =  recv(sockfd,encotherpubkey,KEY_SIZE,0);
 
     //Decrypting with AES and DH
    file = fopen("file2dh.bin", "w");
-   fputs(encotherpubkey,file);
+  for(i = 0; i < size; i++)
+      fputc(encotherpubkey[i],file);
    fclose(file);
    system("bash decryptdh.sh");
     
@@ -182,11 +183,13 @@ void handShake(int sender){
     
     //Receving other encrypted public key
    char encotherpubkey[KEY_SIZE];
-    recv(sockfd,encotherpubkey,KEY_SIZE,0);
+    int size = recv(sockfd,encotherpubkey,KEY_SIZE,0);
 
     //Decrypting with AES and DH
    file = fopen("file2dh.bin", "w");
-   fputs(encotherpubkey,file);
+   for(i = 0; i < size; i++)
+      fputc(encotherpubkey[i],file);
+
    fclose(file);
    system("bash decryptdh.sh");
     
@@ -215,8 +218,9 @@ void handShake(int sender){
         encpubkey[i++] = (char) c;
     }
    encpubkey[i] = '\0';
+   printf("%s\n",encpubkey) ;
    fclose(file);
-   send(sockfd, encpubkey, KEY_SIZE,0);
+   send(sockfd, encpubkey, i,0);
    
   unlink("tempouttextdh");
   unlink("filedh.bin");
