@@ -42,19 +42,6 @@ int closeThreads = 0;
 
 pthread_mutex_t lock=PTHREAD_MUTEX_INITIALIZER;
 
-void send_all(int socket, void *buffer, size_t length, int flags)
-{
-    char *ptr = (char*) buffer;
-    while (length > 0)
-    {
-        int i = send(socket, ptr, length,flags);
-        if (i < 1) return;
-        ptr += i;
-        length -= i;
-    }
-    return;
-}
-
 void handShake(int sender){
   printf("Establishing handshake...\n");
   //Performing Diffie-Hellman
@@ -122,7 +109,7 @@ void handShake(int sender){
     }
    encpubkey[i] = '\0';
    fclose(file);
-   send_all(sockfd, encpubkey, KEY_SIZE,0);
+   send(sockfd, encpubkey, KEY_SIZE,0);
 
  //Receving other encrypted public key
    char encotherpubkey[KEY_SIZE];
@@ -222,12 +209,12 @@ void handShake(int sender){
     }
    encpubkey[i] = '\0';
    fclose(file);
-   send_all(sockfd, encpubkey, KEY_SIZE,0);
+   send(sockfd, encpubkey, KEY_SIZE,0);
    
-   unlink("tempouttextdh");
-  unlink("filedh.bin");
-  unlink("file2dh.bin");
-   unlink("tempintextdh");
+   //unlink("tempouttextdh");
+ // unlink("filedh.bin");
+  //unlink("file2dh.bin");
+   //unlink("tempintextdh");
  }
 }
 
