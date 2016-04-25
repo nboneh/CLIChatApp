@@ -217,11 +217,10 @@ void handShake(int sender){
         encpubkey[i++] = (char) c;
     }
    encpubkey[i] = '\0';
-   printf("%s\n",encpubkey) ;
    fclose(file);
    send(sockfd, encpubkey, i,0);
    
-  //unlink("tempouttextdh");
+  unlink("tempouttextdh");
   unlink("filedh.bin");
   unlink("file2dh.bin");
    unlink("tempintextdh");
@@ -233,7 +232,8 @@ void print_current_time_with_ms ()
   system("bash time.sh");
 }
 
-void encryptRSA(char *inString, char *outString){
+//Returns length
+int encryptRSA(char *inString, char *outString){
   FILE * file = fopen("temppubkey", "w");
   fputs(otherpublicKey,file);
   fclose(file);
@@ -255,14 +255,19 @@ void encryptRSA(char *inString, char *outString){
    outString[i] = '\0';
   fclose(file);
   unlink("file.bin");
+  return i;
 }
 
-void decryptRSA(char *inString, char *outString){
+//Need length because of encrypted data
+void decryptRSA(char *inString, char *outString, int length){
    FILE * file = fopen("temppubkey", "w");
   fputs(otherpublicKey,file);
   fclose(file);
   file = fopen("tempintext","w");
-  fputs(inString,file);
+  int i;
+  for(i = 0; i < length; i++)
+      fputc(inString[i],file);
+  fflush(file);
   fclose(file);
   system( "bash decryptrsa.sh");
 
@@ -270,7 +275,7 @@ void decryptRSA(char *inString, char *outString){
   unlink("tempintext");
 
   file = fopen("file.bin","r");
-  int i = 0;
+   i = 0;
       int c;
   while ((c = fgetc(file)) != EOF)
   { 
@@ -355,11 +360,11 @@ void sendMessage(char* message){
 
   //PerformingRsa
   char encryptmessage[1024];
-  encryptRSA(compmessage, encryptmessage);
+  int size = encryptRSA(compmessage, encryptmessage);
  
   pthread_mutex_lock(&lock); 
   //Critical section do not want to edit file at the same time as listener receives message
-  if(send(sockfd, encryptmessage, 1024, 0) < 0){
+  if(send(sockfd, encryptmessage, size, 0) < 0){
     //Error occured exiting
     printf("Error occured\n");
     pthread_mutex_unlock(&lock); 
@@ -401,7 +406,7 @@ void *receiveMessage(){
     }
 
     char message[1024];
-    decryptRSA(encryptedmessage, message);
+    decryptRSA(encryptedmessage, message,ret);
    pthread_mutex_lock(&lock); 
   //Critical section do not want to edit file at the same time as sender sends message
   FILE * messagefile = fopen(messageFileName, "a");
