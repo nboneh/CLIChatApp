@@ -127,10 +127,9 @@ void handShake(int sender){
   { 
         otherpublicKey[i++] = (char) c;
   }
-  fclose(file);
    otherpublicKey[i] = '\0';
+   fclose(file);
 
-     fclose(file);
    unlink("tempouttext");
   unlink("file.bin");
     unlink("file2.bin");
@@ -211,6 +210,7 @@ void handShake(int sender){
    encpubkey[i] = '\0';
    fclose(file);
    send(sockfd, encpubkey, 1024,0);
+   
       unlink("tempouttext");
   unlink("file.bin");
     unlink("file2.bin");
