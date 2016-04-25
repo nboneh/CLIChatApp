@@ -211,10 +211,10 @@ void handShake(int sender){
    fclose(file);
    send(sockfd, encpubkey, KEY_SIZE,0);
    
-   //unlink("tempouttextdh");
- // unlink("filedh.bin");
-  //unlink("file2dh.bin");
-   //unlink("tempintextdh");
+   unlink("tempouttextdh");
+   unlink("filedh.bin");
+    unlink("file2dh.bin");
+   unlink("tempintextdh");
  }
 }
 
