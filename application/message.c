@@ -103,9 +103,6 @@ void handShake(int sender){
 
     char encpubkey[KEY_SIZE];
     i = 0;
-    fseek(file, 0L, SEEK_END);
-    int length = ftell(file);
-    rewind(file);
     while (i < length)
     { 
         encpubkey[i++] = (char) c;
@@ -122,14 +119,13 @@ void handShake(int sender){
    file = fopen("file2dh.bin", "w");
   for(i = 0; i < size; i++)
       fputc(encotherpubkey[i],file);
+
+      fflush(file);
    fclose(file);
    system("bash decryptdh.sh");
     
   file = fopen("tempouttextdh"   ,"r");
   i = 0;
-  fseek(file, 0L, SEEK_END);
-   length = ftell(file);
-    rewind(file);
   while ((c = fgetc(file)) != EOF)
   { 
         otherpublicKey[i++] = (char) c;
@@ -184,11 +180,14 @@ void handShake(int sender){
     //Receving other encrypted public key
    char encotherpubkey[KEY_SIZE];
     int size = recv(sockfd,encotherpubkey,KEY_SIZE,0);
+    printf("%d\n",size );
 
     //Decrypting with AES and DH
    file = fopen("file2dh.bin", "w");
    for(i = 0; i < size; i++)
       fputc(encotherpubkey[i],file);
+
+    fflush(file);
 
    fclose(file);
    system("bash decryptdh.sh");
@@ -222,7 +221,7 @@ void handShake(int sender){
    fclose(file);
    send(sockfd, encpubkey, i,0);
    
-  unlink("tempouttextdh");
+  //unlink("tempouttextdh");
   unlink("filedh.bin");
   unlink("file2dh.bin");
    unlink("tempintextdh");
