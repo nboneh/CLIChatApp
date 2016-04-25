@@ -1,0 +1,1 @@
+openssl enc -aes-128-ctr -in tempintext -out file.bin -kfile savefiles/dhkey.pem >/dev/null 2>&1
