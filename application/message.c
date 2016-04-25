@@ -101,7 +101,7 @@ void handShake(int sender){
     system("bash encryptdh.sh");
     file = fopen("filedh.bin", "r");
 
-    char encpubkey[1024];
+    char encpubkey[512];
     i = 0;
     while ((c = fgetc(file)) != EOF)
     { 
@@ -109,11 +109,11 @@ void handShake(int sender){
     }
    encpubkey[i] = '\0';
    fclose(file);
-   send(sockfd, encpubkey, 1024,0);
+   send(sockfd, encpubkey, 512,0);
 
  //Receving other encrypted public key
-   char encotherpubkey[1024];
-   recv(sockfd,encotherpubkey,1024,0);
+   char encotherpubkey[512];
+   recv(sockfd,encotherpubkey,512,0);
 
     //Decrypting with AES and DH
    file = fopen("file2dh.bin", "w");
@@ -130,7 +130,7 @@ void handShake(int sender){
    otherpublicKey[i] = '\0';
    fclose(file);
 
-   unlink("tempouttextdh");
+  unlink("tempouttextdh");
   unlink("filedh.bin");
     unlink("file2dh.bin");
    unlink("tempintextdh");
@@ -175,8 +175,8 @@ void handShake(int sender){
   
     
     //Receving other encrypted public key
-   char encotherpubkey[1024];
-    recv(sockfd,encotherpubkey,1024,0);
+   char encotherpubkey[512];
+    recv(sockfd,encotherpubkey,512,0);
 
     //Decrypting with AES and DH
    file = fopen("file2dh.bin", "w");
@@ -193,6 +193,7 @@ void handShake(int sender){
   fclose(file);
    otherpublicKey[i] = '\0';
 
+
     //Encrypting RSA public key and sending
     file = fopen("tempintextdh", "w");
     fputs(mypublicKey, file);
@@ -201,7 +202,7 @@ void handShake(int sender){
     system("bash encryptdh.sh");
     file = fopen("filedh.bin", "r");
 
-    char encpubkey[1024];
+    char encpubkey[512];
     i = 0;
     while ((c = fgetc(file)) != EOF)
     { 
@@ -209,7 +210,7 @@ void handShake(int sender){
     }
    encpubkey[i] = '\0';
    fclose(file);
-   send(sockfd, encpubkey, 1024,0);
+   send(sockfd, encpubkey, 512,0);
    
    unlink("tempouttextdh");
   unlink("filedh.bin");
