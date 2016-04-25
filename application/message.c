@@ -108,8 +108,6 @@ void handShake(int sender){
         encpubkey[i++] = (char) c;
     }
    encpubkey[i] = '\0';
-   unlink("file.bin");
-   unlink("tempintext");
    send(sockfd, encpubkey, 1024,0);
 
    //Receving other encrypted public key
@@ -121,7 +119,6 @@ void handShake(int sender){
    fputs(encotherpubkey,file);
    fclose(file);
    system("bash decryptdh.sh");
-   unlink("file.bin");
    file = fopen("tempouttext"   ,"r");
   i = 0;
   while ((c = fgetc(file)) != EOF)
@@ -131,6 +128,8 @@ void handShake(int sender){
    otherpublicKey[i] = '\0';
      fclose(file);
    unlink("tempouttext");
+  unlink("file.bin");
+   unlink("tempintext");
   } else {
     //The receiver
     //Receiving public DH from sender
@@ -180,7 +179,6 @@ void handShake(int sender){
    fputs(encotherpubkey,file);
    fclose(file);
    system("bash decryptdh.sh");
-    unlink("file.bin");
     file = fopen("tempouttext"   ,"r");
   i = 0;
   while ((c = fgetc(file)) != EOF)
@@ -189,7 +187,6 @@ void handShake(int sender){
   }
   fclose(file);
    otherpublicKey[i] = '\0';
-   unlink("tempouttext");
 
     //Encrypting RSA public key and sending
     file = fopen("tempintext", "w");
@@ -206,9 +203,10 @@ void handShake(int sender){
         encpubkey[i++] = (char) c;
     }
    encpubkey[i] = '\0';
-   unlink("file.bin");
-   unlink("tempintext");
    send(sockfd, encpubkey, 1024,0);
+    unlink("tempouttext");
+  unlink("file.bin");
+   unlink("tempintext");
  }
 }
 
