@@ -340,6 +340,9 @@ void printMessageMode(){
       printf("\n");
   }
 
+  if(lines <= 0)
+    printf("\n");
+
   printf("Messaging %s, type quit to stop: ",messagingContactName);
 
   if(fp != NULL)
