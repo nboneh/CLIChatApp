@@ -120,6 +120,7 @@ void handShake(int sender){
    fputs(encotherpubkey,file);
    fclose(file);
    system("bash decryptdh.sh");
+   unlink("file.bin");
    file = fopen("tempouttext"   ,"r");
   i = 0;
   while ((c = fgetc(file)) != EOF)
@@ -176,6 +177,8 @@ void handShake(int sender){
    fputs(encotherpubkey,file);
    fclose(file);
    system("bash decryptdh.sh");
+    unlink("file.bin");
+    file = fopen("tempouttext"   ,"r");
   i = 0;
   while ((c = fgetc(file)) != EOF)
   { 
