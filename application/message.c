@@ -115,7 +115,7 @@ void handShake(int sender){
    recv(sockfd,encotherpubkey,1024,0);
 
    //Decrypting with AES and DH
-   file = fopen("file.bin", "w");
+   file = fopen("file2.bin", "w");
    fputs(encotherpubkey,file);
    fclose(file);
    system("bash decryptdh.sh");
@@ -129,6 +129,7 @@ void handShake(int sender){
      fclose(file);
    unlink("tempouttext");
   unlink("file.bin");
+    unlink("file2.bin");
    unlink("tempintext");
   } else {
     //The receiver
@@ -175,7 +176,7 @@ void handShake(int sender){
    recv(sockfd,encotherpubkey,1024,0);
 
     //Decrypting with AES and DH
-   file = fopen("file.bin", "w");
+   file = fopen("file2.bin", "w");
    fputs(encotherpubkey,file);
    fclose(file);
    system("bash decryptdh.sh");
@@ -204,8 +205,9 @@ void handShake(int sender){
     }
    encpubkey[i] = '\0';
    send(sockfd, encpubkey, 1024,0);
-    unlink("tempouttext");
+      unlink("tempouttext");
   unlink("file.bin");
+    unlink("file2.bin");
    unlink("tempintext");
  }
 }
