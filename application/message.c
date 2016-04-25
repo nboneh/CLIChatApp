@@ -129,6 +129,7 @@ void handShake(int sender){
         otherpublicKey[i++] = (char) c;
   }
    otherpublicKey[i] = '\0';
+     fclose(file);
    unlink("tempouttext");
   } else {
     //The receiver
@@ -186,6 +187,7 @@ void handShake(int sender){
   { 
         otherpublicKey[i++] = (char) c;
   }
+  fclose(file);
    otherpublicKey[i] = '\0';
    unlink("tempouttext");
 
