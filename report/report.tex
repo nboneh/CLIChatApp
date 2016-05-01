@@ -90,7 +90,7 @@
 This project discusses the creation and design of a decentralized CLI unix-based messaging application written in C. Examining 
 closely on how to eliminate security risks and introspecting on the usefulness of the application in various situations. The 
 advantages of using this application over other similar application in areas such as security, practicality, and speed is also 
-discussed. Charts showing speed comparisons of sending messages over lan or wan are also shown. The source code for the project can be found at \href{https://github.com/nboneh/CLIMessageApp}{https://github.com/nboneh/CLIMessageApp} and the repository can be used for downloading and installing the application.
+discussed. Charts showing speed comparisons of sending messages over lan or wan are also shown. It also goes into detail about implementation and includes information on socket programming, hashmaps, and OpenSSL. The source code for the project can be found at \href{https://github.com/nboneh/CLIMessageApp}{https://github.com/nboneh/CLIMessageApp} and the repository can be used for downloading and installing the application.
 
 \end{abstract}
 
@@ -112,45 +112,56 @@ our efficient terminal fingertips. Not to mention such an application would be e
 to just a terminal, such as with special types of machines or on remote ssh. While a great messaging CLI application does exist, 
 called telegram \cite{telegram}, it does not serve the purpose of being a decentralized application. That means that big brother 
 could be watching your messages not to mention that security attacks could happen to the the telegram server which is stated to be 
-vulnerable to MITM attacks according to a tech.eu article \cite{wauters}. The other risk is that the server could go offline 
-rendering the application useless. There is also a great chat application that is decentralized called chat terminal \cite{lanchat}. 
-While it works great it's missing the key advantage of messaging which is being able to send a message while the other user is 
-offline which could come in handy. Therefore,
-a messaging application that is decentralized is missing from the terminal tool arsenal which is the main focus of the CLI messaging 
+vulnerable to MITM (Man in the Middle) attacks according to a tech.eu article \cite{wauters}. The other risk is that the server could go offline 
+rendering the application useless. There is also a chat application that is decentralized called chat terminal \cite{lanchat}. 
+Installation for this application is diffcult and requires many pre requisite items and even after installing those I wasn't able to get it to compile. 
+It also misses the key feature of messaging which is being able to save messaging history.  
+So a messaging application that is decentralized, secure, and easy to install is missing from the terminal tool arsenal, which is the main focus of the CLI messaging 
 application. 
 %------------------------------------------------
 
 
+\begin{figure*} % figure* spans two columns, figure is just one column
+\includegraphics[width=1\textwidth,natwidth=894,natheight=444]{help.png}
+\caption 
+{The help command showing all available commands.}
+\end{figure*}
+
 \section{Design}
 
-The CLI messaging application will be programmed in C. There will be three main components to designing the CLI messaging application.
+The CLI messaging application is written in C with over 1,000 lines of code and 800 lines of original code and is written for Unix based systems (Mac and Linux). It is easy to install, using git clone or downloading the source code from github and running make, it does however require that OpenSSL 1.0.xg is installed which might require more effort from Mac users. In this section we will go over the features and commands that CLI Messaging Application gives its users and a basic rundown of the commands implementation, a more detailed explnation of how the complex message command works will be covered in the implementation section. 
 
-\begin{enumerate}
-  \item The CLI features, frontend
-  \item Communication between nodes 
-  \item Avoiding security risks 
-\end{enumerate}
+\subsection{The IP Command}
+
+The IP command allows one to see his LAN and WAN IP addresses. This allows one to quickly share with his friends the way to contact him using the application. It works by having c call a small bash script using the system call that prints out the LAN and WAN IP to stdout.
+
+\subsection{Contacts Commands}
+
+There are three contacts commands that work to modify the same data. The add command allows one to add a new contact by typing in an IP address and a contact name. The remove command allow one to remove a contact based on his contact name. The contacts command allows one to see all of the current contacts. The contact data is store in a data structure called a hashmap which allows one to retrieve a value, in this case contact name, using a key, in this case IP address. An online open source project implementation hashmap was used for the application \cite{petewarden}. There is a forward and backward hashmap data structure one to look up IPs based on contact names and the other is to look up contact name based on IPs. The reason for this is if you want to send a message you will do so based on the contact name, and if you receive a message you will get the IP and need to know who it is from. The hashmap is saved on the disk in a text file and overwritten every time an add happens, remove happens, or the application exits, so the contacts are reloaded everytime the application is loaded. 
+
+\subsection{Message Command}
+
+The message command allows one to set up a messaging channel communication with another node based on their IP or contact name. Upon receiving the request, the second node decides whether to accept or reject the request. If the other node accepts both nodes will perform a secure handshake and enter message mode. This is where anything you type is sent over to the other user with a timestamp and the message, the entire conversation is always printed out. If one node types in quit, the application will go back to regular interactive mode, for both nodes. 
+The message conversation is saved on disk based on the other node's IP and will be reloaded the next time a messaging channel is setup. 
+The message command has the most complex implementation and will be discussed more in detail in the implementation section. 
 
 
-\subsection{The CLI features, frontend}
-A user will interact with an interactive CLI, it will provide a set of commands and features. The help command will let the user see all available commands and a description of how to use them. The user 
-will be notified about this command when the user types in a wrong command. The add command that will take in two parameters one being the IP and the other 
-being the nickname for the user. This will add a new contact that you can quickly setup communication with. The message command which will take either an ip address or a nickname and establish a communication messaging channel with that IP address. Once a messaging channel has been established one can see all previous messages with that IP address. The delete command will let one delete all previous messages with the user that is currently being messaged with. The quit command will also be available which will exit the application either 
-by calling quit or pressing CTRL+D. The CLI will also notify the user when a new message is received.
-\subsection{Communication between nodes }
-A communication between two nodes will be done via TCP/IP connection using socket programming. Currently the application is limited to being able to establish a messaging channel between you and one other user, but might be expanded to group chat in future releases. Sicne a TCP connection cannot be established if another node is offline, the messaging will work as follows. You can send a message to an offline user, but he/she will only receive it later when both of you are online. This also makes the delete command more powerful, if the other user is offline you can delete the messages that you have sent.
+\section{Implementation}
+This section will go over socket communication and performing OpenSSL to send secure information between the two nodes. 
+\subsection{Messaging between nodes }
+A communication between two nodes is setup via TCP/IP connection using socket programming. Socket programming in C can be quite diffcult and confusing, so I would like to thank Beej's Guide to Network Programming for helping me setup the code \cite{hall}. Before communication channel is open a communication socket has to be setup and there are two ends to this. A connect socket and a listen socket, one request connection and the other accepts the connection. To set up a socket an IP address and a port is required, the application's port is set to be 3490 as macro in the code. The listen socket calls on the accept system call where it hangs till a connect socket requests connection. So how is it possible to run a listen socket without freezing the application? With the use of pthreading. The application sets up a listen socket on a seperate thread when it first boots up. Upon the accept socket system call returning a global is set up to let the UI thread know that a communication has been established. Once the link is performed sending of messages can be done via send and recv system calls, the recv system also hangs so again a second thread has to be setup. Everytime a user types in a message the send call is called and sends it to the receiver. Both the send and receive write to the same file, so a mutex lock is required to keep the resource safe since they run on seperate threads. A mutex lock works by only allowing one thread into a code section at a time making sure only one thread writes to the file. If one thread hangs up or quits the recv function returns a zero which lets the other end user know that the remote has hang up. This node sets a global to true in the receive thread and goes back to interactive mode. 
 \subsection{Avoiding security risks}
-There are two main security risks that will be addressed when building the application. The first one being making sure to encrypt messages between two nodes so no one can decipher them, this will be addressed using RSA through the use of a public key and private key. The second problem is being able to share a public key on a non-secure channel which will be addressed using Diffie Hellman key exchange.
+There are two main security risks that are addressed when building the application. The first one is making sure to encrypt messages between two nodes so no one can decipher them, this is addressed using RSA through the use of a public key and private key. The second problem is being able to share the RSA public keys on a non-secure channel which is addressed using Diffie Hellman key exchange. The way that these algorithms are used in code pratice is through bash script calling on the OpenSSL library reading from a file and writing to a file. c calls on these bash scripts using the command function, writing to a file before and then reading from the output file, both files are then deleted using c's unlink system call. 
 \subsubsection{RSA for secure communication}
 The general idea of RSA works as follows, each user has a public key and a private key which they can generate using the RSA algorithm. Upon generating these two keys, a user can share his public key with 
 everyone, but keeps 
 the private key to himself. Now anyone who wants to share secure messages with another user, encrypts the message using the user public key, but the message can only be decrypted using the private key. Therefore, no 
-one can read messages sent to the user other than the intended user himself. This will be the main method of communication when two users are sending messages back and forth using the application. The RSA algorithm involves generating two large prime numbers and multiplying them togther to get a composite, in order for anyone to 
+one can read messages sent to the user other than the intended user himself. This is the main method of communication when two users are sending messages back and forth using the application. The RSA algorithm involves generating two large prime numbers and multiplying them togther to get a composite. In order for anyone to 
 crack the RSA algorithm it would require being able to figure out the two prime numbers using factoring which is extremely diffcult and would take a ridicilous amount of time doing by brute force, so one can 
 trust RSA to be a rather secure algorithm.
 \subsubsection{Diffie Hellman key exchange}
 The only issue with the RSA method alone is that the user needs to share his public key with another user on a non-secure channel and this 
-is where security risks are prone, this is where Diffie Hellman key exchange comes into play. One possible security risk that could happen when sharing a public key on a non-secure channel is called man in the middle attack. Let's imagine two users Alice and Bob, and a malicious user called Chris, here is how a man in the middle attack will play out:
+is where security risks are prone, this is where Diffie Hellman key exchange comes into play. One possible security risk that could happen when sharing a public key on a non-secure channel is called Man in the Middle Attack. Let's imagine two users Alice and Bob, and a malicious user called Chris, here is how a man in the middle attack will play out:
 
 \begin{enumerate}
   \item Bob sends a package to Alice: Hey Alice this is Bob, here is my public key: Bob's key.
@@ -172,31 +183,8 @@ The only way to avoid such a terrible scenario is using the Diffie Hellman key e
   \item Bob and Alice can now send the public key using this fourth color for encoding without Chris being able to manipulate the situation.
 \end{enumerate}
 
-While it is true that a man in the middle attack could disrupt the handshake, it will not be able to gain power over the conversation, since it can not know the fourth color. If a man in the middle attack those disrupt the process, the handshake can be retried over and over till he gets bored and moves on. So, basically the way the application will avoid security risks is by sharing public keys using Diffie Hellman and from there messages will be exchanged using RSA.
+While it is true that a man in the middle attack could disrupt the handshake, it will not be able to gain power over the conversation, since it can not know the fourth color. If a man in the middle attack those disrupt the process, the handshake can be retried over and over till he gets bored and moves on. The last component is using the secret known color to encrypt the RSA public key, this is done through an cipher algorithm called AES, which encrypts message based on a value and then the message can be decrypted using that same value. So, basically the way the application avoids security risks is by sharing public keys using Diffie Hellman and from there messages are exchanged using RSA.
 
-\section{Evaluation}
-
-\subsection{Methodology}
-In Order to compare the efficiency of the application, we will compare it to the well known CLI centralized messaging application called Telegram. Specifically we will compare the speed of sending a message using the CLI Messaging application and compare it to the speed of telegram. The CLI messaging application will be tested over WAN and LAN networks and the Telegram will be tested normally, since you have to send a message through a server. We will test the speed on short messages, medium messages, and long messages and average the speed of three instances of each. In the CLI Messaging application we will setup testing code to check on the speed of sending a message. For the telegram we will create what telegram calls a bot and send a message using CURL and eveluate the speed of the curl command using the UNIX time command. We would first obtain a chat id using 
-\begin{lstlisting}
-curl -s \ 
--X POST 
-\https://api.telegram.org/bot<token>
-/getUpdates
- \| jq .
-\end{lstlisting} 
-and then test the speed using the following curl command to send a message \cite{malizia}: 
-\begin{lstlisting}
-curl -s \
--X POST 
-\https://api.telegram.org/bot<token>
-/sendMessage 
-\-d text="A message from your bot" 
-\-d chat_id=65535 \ 
-| jq .
-\end{lstlisting} 
-\centering
-\subsection{Results}
 \begin{table*}[t]
 \centering
 \begin{tabular}{ |p{3cm}||p{3cm}|p{3cm}|p{3cm}|  }
@@ -212,7 +200,18 @@ Message Length& Telegram &CLI Messaging App LAN &CLI Messaging App WAN \\
 \end{tabular}
 \caption{ Shows speed comparison of CLI Messaging App on LAN and WAN network as well as telegram}
 \end{table*}
-\FloatBarrier
+
+\section{Evaluation}
+
+
+\subsection{Methodology}
+In order to compare the efficiency of the application, a speed comparison is done with well known CLI centralized messaging application called Telegram. The CLI messaging application is tested over WAN and LAN networks and the Telegram is tested normally, since you have to send a message through a server which makes it  WAN. The test is performed on short messages, medium messages, and long messages. To test the speed of messages on the CLI Messaging application a time shell script is called to print the time in milliseconds before RSA encryption and after the RSA decryption on the receiving end. The difference is then compared to get the speed. For the Telegram performane, what they like to call a bot is set up, and then using the bot send a message to my Telegram account is sent using CURL and then eveluated using the UNIX time command. 
+
+\subsection{Results}
+These are some strange results, but here is my theory on what happened.
+When I was testing WAN I was testing my Mac communication with a Google Compute Engine Server and when I was testing on LAN I was testing my Linux VM and my Mac. So, the Google Compute Engine Server has less bottleneck in execution performance than the VM. My theory is that network I/O wasn’t the main culprit for speed execution, it was the RSA computation.
+As for telegram being slower, I assume it is due to them having to run messaging through a centralized server and having to serve many clients.
+
 
 %----------------------------------------------------------------------------------------
 %   REFERENCE LIST
